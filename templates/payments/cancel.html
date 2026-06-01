@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block meta_description %}{% trans "Your payment was cancelled. You can retry or return to your orders." %}{% endblock %}
+{% block title %}{% trans "Payment Cancelled" %} - HomeStore{% endblock %}
+{% block og_title %}{% trans "Payment Cancelled" %} - HomeStore{% endblock %}
+{% block og_description %}{% trans "Your payment was not completed. You can try again or go back to your orders." %}{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center py-16 md:py-24 bg-neutral-50">
+  <div class="max-w-lg mx-auto px-4 text-center">
+    <!-- Red X Icon -->
+    <div class="mx-auto mb-8 w-20 h-20 rounded-full bg-red-100 flex items-center justify-center"
+         x-data="{ show: false }"
+         x-init="setTimeout(() => show = true, 200)"
+         x-show="show"
+         x-transition:enter="transition-all duration-500 ease-out"
+         x-transition:enter-start="opacity-0 scale-50"
+         x-transition:enter-end="opacity-100 scale-100">
+      <i class="fas fa-times text-4xl text-red-600"></i>
+    </div>
+
+    <h1 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-4 animate-fade-in">
+      {% trans "Payment Cancelled" %}
+    </h1>
+    <p class="text-lg text-neutral-600 mb-2 animate-slide-up">
+      {% trans "Your payment was not completed." %}
+    </p>
+    <p class="text-neutral-500 mb-8 animate-slide-up">
+      {% trans "No charges have been made. You can try again or come back to your orders any time." %}
+    </p>
+
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="{% url 'payments:payment' %}"
+         class="inline-flex items-center justify-center px-8 py-3 bg-neutral-900 text-white text-sm font-semibold rounded-full hover:bg-neutral-800 transition-all duration-200 shadow-sm hover:shadow-md w-full sm:w-auto">
+        <i class="fas fa-redo mr-2"></i> {% trans "Try Again" %}
+      </a>
+      <a href="{% url 'orders:history' %}"
+         class="inline-flex items-center justify-center px-8 py-3 bg-white text-neutral-900 text-sm font-semibold rounded-full border border-neutral-300 hover:bg-neutral-100 transition-all duration-200 w-full sm:w-auto">
+        <i class="fas fa-arrow-left mr-2"></i> {% trans "Back to Orders" %}
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

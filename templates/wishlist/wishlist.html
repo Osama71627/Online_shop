@@ -1,0 +1,93 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% trans "My Wishlist" %} - HomeStore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    {% include 'includes/header.html' %}
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">{% trans "My Wishlist" %}</h1>
+                <p class="text-sm text-gray-500 mt-1">{% blocktrans count counter=wishlist.items.count %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktrans %}</p>
+            </div>
+            <a href="{% url 'core:home' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>{% trans "Continue Shopping" %}
+            </a>
+        </div>
+
+        {% if messages %}
+            <div class="mb-6 space-y-2">
+                {% for message in messages %}
+                    <div class="flex items-center space-x-2 px-4 py-3 rounded-lg text-sm font-medium {% if message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200{% elif message.tags == 'success' %}bg-green-50 text-green-700 border border-green-200{% else %}bg-blue-50 text-blue-700 border border-blue-200{% endif %}">
+                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-info-circle{% endif %}"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if wishlist.items.all %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {% for item in wishlist.items.all %}
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden group">
+                        <a href="{% url 'products:product_detail' item.product.slug %}" class="block aspect-square bg-gray-100 relative overflow-hidden">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.thumbnail_url }}" alt="{{ item.product.name }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            {% else %}
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <i class="fas fa-image text-4xl text-gray-300"></i>
+                                </div>
+                            {% endif %}
+                            {% if item.product.discount %}
+                                <span class="absolute top-2 left-2 bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded">-{{ item.product.discount }}%</span>
+                            {% endif %}
+                            <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                <a href="{% url 'wishlist:remove' item.product.id %}" class="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-colors shadow-sm">
+                                    <i class="fas fa-times text-sm"></i>
+                                </a>
+                            </div>
+                        </a>
+                        <div class="p-4">
+                            <a href="{% url 'products:product_detail' item.product.slug %}" class="text-sm font-semibold text-gray-900 hover:text-indigo-600 transition-colors line-clamp-2">{{ item.product.name }}</a>
+                            <div class="flex items-center space-x-2 mt-2">
+                                <span class="text-lg font-bold text-indigo-600">${{ item.product.price }}</span>
+                                {% if item.product.old_price %}
+                                    <span class="text-sm text-gray-400 line-through">${{ item.product.old_price }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="flex items-center space-x-2 mt-4">
+                                <a href="{% url 'cart:add' item.product.id %}" class="flex-1 text-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition-colors">
+                                    <i class="fas fa-shopping-cart mr-1"></i>{% trans "Add to Cart" %}
+                                </a>
+                                <a href="{% url 'wishlist:remove' item.product.id %}" class="px-3 py-2 border border-gray-300 text-gray-500 text-xs font-medium rounded-lg hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-colors">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-16 text-center">
+                <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-pink-100 flex items-center justify-center">
+                    <i class="fas fa-heart text-3xl text-pink-400"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{% trans "Your wishlist is empty" %}</h3>
+                <p class="text-gray-500 text-sm mb-6 max-w-md mx-auto">{% trans "Save your favorite items here and come back to them later!" %}</p>
+                <a href="{% url 'core:home' %}" class="inline-flex items-center px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-md shadow-indigo-200 transition-all duration-150">
+                    <i class="fas fa-store mr-2"></i>{% trans "Browse Products" %}
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

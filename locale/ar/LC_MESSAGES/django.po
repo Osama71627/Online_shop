@@ -1,0 +1,574 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: HomeStore 1.0\n"
+"Language-Team: Arabic\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+msgid "Home"
+msgstr "الرئيسية"
+
+msgid "Products"
+msgstr "المنتجات"
+
+msgid "Categories"
+msgstr "التصنيفات"
+
+msgid "Deals"
+msgstr "العروض"
+
+msgid "About"
+msgstr "حول"
+
+msgid "Contact"
+msgstr "اتصل بنا"
+
+msgid "All Products"
+msgstr "جميع المنتجات"
+
+msgid "View All"
+msgstr "عرض الكل"
+
+msgid "Login"
+msgstr "تسجيل الدخول"
+
+msgid "Register"
+msgstr "إنشاء حساب"
+
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+
+msgid "Profile"
+msgstr "الملف الشخصي"
+
+msgid "Orders"
+msgstr "الطلبات"
+
+msgid "Logout"
+msgstr "تسجيل الخروج"
+
+msgid "Wishlist"
+msgstr "المفضلة"
+
+msgid "Add to Cart"
+msgstr "أضف إلى السلة"
+
+msgid "Shopping Cart"
+msgstr "سلة التسوق"
+
+msgid "Free Shipping"
+msgstr "توصيل مجاني"
+
+msgid "Secure Payment"
+msgstr "دفع آمن"
+
+msgid "24/7 Support"
+msgstr "دعم على مدار الساعة"
+
+msgid "Easy Returns"
+msgstr "إرجاع سهل"
+
+msgid "Flash Deals"
+msgstr "عروض خاطفة"
+
+msgid "Featured Products"
+msgstr "منتجات مميزة"
+
+msgid "Best Sellers"
+msgstr "الأكثر مبيعاً"
+
+msgid "Shop Now"
+msgstr "تسوق الآن"
+
+msgid "New Arrivals"
+msgstr "وصل حديثاً"
+
+msgid "Limited Time"
+msgstr "لفترة محدودة"
+
+msgid "Subscribe"
+msgstr "اشتراك"
+
+msgid "Newsletter"
+msgstr "النشرة البريدية"
+
+msgid "Quick Links"
+msgstr "روابط سريعة"
+
+msgid "Customer Service"
+msgstr "خدمة العملاء"
+
+msgid "About Us"
+msgstr "من نحن"
+
+msgid "Contact Us"
+msgstr "اتصل بنا"
+
+msgid "Privacy Policy"
+msgstr "سياسة الخصوصية"
+
+msgid "Terms of Service"
+msgstr "شروط الخدمة"
+
+msgid "FAQ"
+msgstr "الأسئلة الشائعة"
+
+msgid "All rights reserved."
+msgstr "جميع الحقوق محفوظة."
+
+msgid "Filters & Sort"
+msgstr "التصفية والترتيب"
+
+msgid "Price Range"
+msgstr "نطاق السعر"
+
+msgid "Min"
+msgstr "الحد الأدنى"
+
+msgid "Max"
+msgstr "الحد الأقصى"
+
+msgid "Sort By"
+msgstr "ترتيب حسب"
+
+msgid "Apply Filters"
+msgstr "تطبيق التصفية"
+
+msgid "Clear All"
+msgstr "مسح الكل"
+
+msgid "No products found"
+msgstr "لا توجد منتجات"
+
+msgid "Clear Filters"
+msgstr "مسح التصفية"
+
+msgid "Newest"
+msgstr "الأحدث"
+
+msgid "Price: Low to High"
+msgstr "السعر: من الأقل إلى الأعلى"
+
+msgid "Price: High to Low"
+msgstr "السعر: من الأعلى إلى الأقل"
+
+msgid "Name: A-Z"
+msgstr "الاسم: أ-ي"
+
+msgid "Description"
+msgstr "الوصف"
+
+msgid "Specifications"
+msgstr "المواصفات"
+
+msgid "Reviews"
+msgstr "التقييمات"
+
+msgid "In Stock"
+msgstr "متوفر"
+
+msgid "Out of Stock"
+msgstr "غير متوفر"
+
+msgid "Quantity"
+msgstr "الكمية"
+
+msgid "Add to Wishlist"
+msgstr "أضف إلى المفضلة"
+
+msgid "Related Products"
+msgstr "منتجات ذات صلة"
+
+msgid "Write a Review"
+msgstr "اكتب تقييماً"
+
+msgid "Submit Review"
+msgstr "إرسال التقييم"
+
+msgid "Your Rating"
+msgstr "تقييمك"
+
+msgid "Title"
+msgstr "العنوان"
+
+msgid "Your Review"
+msgstr "تقييمك"
+
+msgid "Submit"
+msgstr "إرسال"
+
+msgid "No reviews yet."
+msgstr "لا توجد تقييمات بعد."
+
+msgid "Be the first to review!"
+msgstr "كن أول من يقيم!"
+
+msgid "Order Summary"
+msgstr "ملخص الطلب"
+
+msgid "Subtotal"
+msgstr "المجموع الفرعي"
+
+msgid "Shipping"
+msgstr "الشحن"
+
+msgid "Free"
+msgstr "مجاني"
+
+msgid "Tax"
+msgstr "الضريبة"
+
+msgid "Discount"
+msgstr "الخصم"
+
+msgid "Total"
+msgstr "الإجمالي"
+
+msgid "Proceed to Checkout"
+msgstr "متابعة الدفع"
+
+msgid "Continue Shopping"
+msgstr "متابعة التسوق"
+
+msgid "Your cart is empty"
+msgstr "سلتك فارغة"
+
+msgid "Start Shopping"
+msgstr "ابدأ التسوق"
+
+msgid "Apply Coupon"
+msgstr "تطبيق كوبون"
+
+msgid "Apply"
+msgstr "تطبيق"
+
+msgid "Complete Your Order"
+msgstr "إكمال الطلب"
+
+msgid "Shipping Address"
+msgstr "عنوان الشحن"
+
+msgid "Payment Method"
+msgstr "طريقة الدفع"
+
+msgid "Credit / Debit Card"
+msgstr "بطاقة ائتمان / خصم"
+
+msgid "Cash on Delivery"
+msgstr "الدفع عند الاستلام"
+
+msgid "Place Order"
+msgstr "تقديم الطلب"
+
+msgid "Sign in to your account"
+msgstr "تسجيل الدخول إلى حسابك"
+
+msgid "Username"
+msgstr "اسم المستخدم"
+
+msgid "Password"
+msgstr "كلمة المرور"
+
+msgid "Sign In"
+msgstr "تسجيل الدخول"
+
+msgid "Remember me"
+msgstr "تذكرني"
+
+msgid "Forgot password?"
+msgstr "نسيت كلمة المرور؟"
+
+msgid "Create your account"
+msgstr "إنشاء حساب جديد"
+
+msgid "Email"
+msgstr "البريد الإلكتروني"
+
+msgid "Confirm Password"
+msgstr "تأكيد كلمة المرور"
+
+msgid "Create Account"
+msgstr "إنشاء حساب"
+
+msgid "Already have an account?"
+msgstr "لديك حساب بالفعل؟"
+
+msgid "My Dashboard"
+msgstr "لوحة التحكم"
+
+msgid "Recent Orders"
+msgstr "آخر الطلبات"
+
+msgid "Account Details"
+msgstr "تفاصيل الحساب"
+
+msgid "Edit Profile"
+msgstr "تعديل الملف الشخصي"
+
+msgid "Change Password"
+msgstr "تغيير كلمة المرور"
+
+msgid "Total Orders"
+msgstr "إجمالي الطلبات"
+
+msgid "Wishlist Items"
+msgstr "عناصر المفضلة"
+
+msgid "My Orders"
+msgstr "طلباتي"
+
+msgid "Saved Addresses"
+msgstr "العناوين المحفوظة"
+
+msgid "Add Address"
+msgstr "إضافة عنوان"
+
+msgid "No orders yet."
+msgstr "لا توجد طلبات بعد."
+
+msgid "Your wishlist is empty"
+msgstr "قائمة المفضلة فارغة"
+
+msgid "Save Changes"
+msgstr "حفظ التغييرات"
+
+msgid "Explore Products"
+msgstr "تصفح المنتجات"
+
+msgid "Loading"
+msgstr "جاري التحميل"
+
+msgid "View"
+msgstr "عرض"
+
+msgid "Remove"
+msgstr "إزالة"
+
+msgid "Cancel"
+msgstr "إلغاء"
+
+msgid "Save"
+msgstr "حفظ"
+
+msgid "Edit"
+msgstr "تعديل"
+
+msgid "Back"
+msgstr "رجوع"
+
+msgid "Settings"
+msgstr "الإعدادات"
+
+msgid "Language"
+msgstr "اللغة"
+
+msgid "English"
+msgstr "الإنجليزية"
+
+msgid "Arabic"
+msgstr "العربية"
+
+msgid "Actions"
+msgstr "الإجراءات"
+
+msgid "Status"
+msgstr "الحالة"
+
+msgid "Date"
+msgstr "التاريخ"
+
+msgid "Price"
+msgstr "السعر"
+
+msgid "Order"
+msgstr "الطلب"
+
+msgid "Pending"
+msgstr "قيد الانتظار"
+
+msgid "Confirmed"
+msgstr "مؤكد"
+
+msgid "Processing"
+msgstr "قيد المعالجة"
+
+msgid "Shipped"
+msgstr "تم الشحن"
+
+msgid "Delivered"
+msgstr "تم التوصيل"
+
+msgid "Cancelled"
+msgstr "ملغي"
+
+msgid "Refunded"
+msgstr "تم الاسترداد"
+
+msgid "Cancel Order"
+msgstr "إلغاء الطلب"
+
+msgid "Back to Orders"
+msgstr "العودة إلى الطلبات"
+
+msgid "Order Number"
+msgstr "رقم الطلب"
+
+msgid "Order Details"
+msgstr "تفاصيل الطلب"
+
+msgid "Payment"
+msgstr "الدفع"
+
+msgid "Complete Payment"
+msgstr "إتمام الدفع"
+
+msgid "Payment Successful!"
+msgstr "تم الدفع بنجاح!"
+
+msgid "Payment Cancelled"
+msgstr "تم إلغاء الدفع"
+
+msgid "Try Again"
+msgstr "حاول مرة أخرى"
+
+msgid "View My Orders"
+msgstr "عرض طلباتي"
+
+msgid "Get in Touch"
+msgstr "تواصل معنا"
+
+msgid "Full Name"
+msgstr "الاسم الكامل"
+
+msgid "Message"
+msgstr "الرسالة"
+
+msgid "Send Message"
+msgstr "إرسال الرسالة"
+
+msgid "Email Address"
+msgstr "البريد الإلكتروني"
+
+msgid "Subject"
+msgstr "الموضوع"
+
+msgid "Our Address"
+msgstr "عنواننا"
+
+msgid "Phone"
+msgstr "الهاتف"
+
+msgid "Phone Number"
+msgstr "رقم الهاتف"
+
+msgid "Working Hours"
+msgstr "ساعات العمل"
+
+msgid "Follow Us"
+msgstr "تابعنا"
+
+msgid "Message sent successfully!"
+msgstr "تم إرسال الرسالة بنجاح!"
+
+msgid "Invalid email"
+msgstr "بريد إلكتروني غير صالح"
+
+msgid "Subscribed successfully!"
+msgstr "تم الاشتراك بنجاح!"
+
+msgid "Something went wrong"
+msgstr "حدث خطأ ما"
+
+msgid "Added"
+msgstr "تمت الإضافة"
+
+msgid "Profile Settings"
+msgstr "إعدادات الملف الشخصي"
+
+msgid "First Name"
+msgstr "الاسم الأول"
+
+msgid "Last Name"
+msgstr "اسم العائلة"
+
+msgid "Save Address"
+msgstr "حفظ العنوان"
+
+msgid "Edit Address"
+msgstr "تعديل العنوان"
+
+msgid "City"
+msgstr "المدينة"
+
+msgid "State"
+msgstr "الولاية"
+
+msgid "ZIP Code"
+msgstr "الرمز البريدي"
+
+msgid "Country"
+msgstr "البلد"
+
+msgid "optional"
+msgstr "اختياري"
+
+msgid "Reset Password"
+msgstr "إعادة تعيين كلمة المرور"
+
+msgid "Forgot your password?"
+msgstr "نسيت كلمة المرور؟"
+
+msgid "Send Reset Link"
+msgstr "إرسال رابط إعادة التعيين"
+
+msgid "Back to login"
+msgstr "العودة إلى تسجيل الدخول"
+
+msgid "First"
+msgstr "الأول"
+
+msgid "Previous"
+msgstr "السابق"
+
+msgid "Next"
+msgstr "التالي"
+
+msgid "Last"
+msgstr "الأخير"
+
+msgid "Shop"
+msgstr "تسوق"
+
+msgid "Blog"
+msgstr "المدونة"
+
+msgid "Warranty"
+msgstr "الضمان"
+
+msgid "Shipping Information"
+msgstr "معلومات الشحن"
+
+msgid "Returns & Exchanges"
+msgstr "الإرجاع والاستبدال"
+
+msgid "Size Guide"
+msgstr "دليل المقاسات"
+
+msgid "View Details"
+msgstr "عرض التفاصيل"
+
+msgid "All Orders"
+msgstr "جميع الطلبات"
+
+msgid "Secure Checkout"
+msgstr "دفع آمن"
+
+msgid "Remove item"
+msgstr "إزالة العنصر"
+
+msgid "Log in"
+msgstr "تسجيل الدخول"

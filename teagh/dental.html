@@ -1,0 +1,150 @@
+```html
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>Dental Chart</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f5f8;
+text-align:center;
+direction:rtl;
+}
+
+.chart{
+position:relative;
+width:600px;
+height:500px;
+margin:auto;
+}
+
+.mouth{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:300px;
+height:200px;
+border:3px dashed #bbb;
+border-radius:50%;
+}
+
+.tooth-box{
+position:absolute;
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+.tooth-number{
+font-size:11px;
+font-weight:bold;
+margin-bottom:2px;
+color:#333;
+}
+
+.tooth{
+width:28px;
+height:32px;
+background:#3fa2e0;
+border:2px solid #0b4a7d;
+border-radius:8px;
+cursor:pointer;
+transition:.2s;
+}
+
+.tooth:hover{
+background:#2c82b9;
+}
+
+.tooth.active{
+background:#e74c3c;
+}
+
+.result{
+margin-top:20px;
+font-size:18px;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>Dental Chart</h2>
+
+<div class="chart">
+<div class="mouth"></div>
+</div>
+
+<div class="result">
+السن المختار: <span id="selected">لا يوجد</span>
+</div>
+
+<script>
+
+const upper=[18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28]
+const lower=[48,47,46,45,44,43,42,41,31,32,33,34,35,36,37,38]
+
+const chart=document.querySelector(".chart")
+const result=document.getElementById("selected")
+
+let centerX=300
+let centerY=250
+
+// نصف القطر قريب من الدائرة
+let radiusX=160
+let radiusY=100
+
+let arc=Math.PI*0.9
+
+function drawTeeth(list,offset){
+
+list.forEach((tooth,index)=>{
+
+let angle=(-arc/2)+(arc/(list.length-1))*index
+
+let x=centerX + radiusX*Math.cos(angle+offset)
+let y=centerY + radiusY*Math.sin(angle+offset)
+
+let box=document.createElement("div")
+box.className="tooth-box"
+
+box.style.left=(x-14)+"px"
+box.style.top=(y-22)+"px"
+
+let number=document.createElement("div")
+number.className="tooth-number"
+number.innerText=tooth
+
+let div=document.createElement("div")
+div.className="tooth"
+
+div.onclick=function(){
+
+result.innerText=tooth
+div.classList.toggle("active")
+
+}
+
+box.appendChild(number)
+box.appendChild(div)
+
+chart.appendChild(box)
+
+})
+
+}
+
+drawTeeth(upper,Math.PI)
+drawTeeth(lower,0)
+
+</script>
+
+</body>
+</html>
+```

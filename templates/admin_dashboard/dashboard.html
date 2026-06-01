@@ -1,0 +1,576 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - HomeStore Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .sidebar-link { transition: all 0.2s; }
+        .sidebar-link:hover { background: rgba(255,255,255,0.1); }
+        .sidebar-link.active { background: rgba(255,255,255,0.15); border-left: 3px solid #3b82f6; }
+        .stat-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans antialiased" x-data="{ sidebarOpen: true, searchOpen: false }">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-white flex flex-col transition-all duration-300" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-64'" x-cloak>
+            <div class="flex items-center gap-3 px-6 py-5 border-b border-slate-700">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-lg font-bold">H</div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight">HomeStore</h1>
+                    <p class="text-xs text-slate-400 -mt-0.5">Admin Panel</p>
+                </div>
+            </div>
+            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+                <a href="#" class="sidebar-link active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white bg-slate-800/50">
+                    <i class="fas fa-th-large w-5 text-center text-blue-400"></i> Dashboard
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-box w-5 text-center"></i> Products
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 ml-7 text-xs">
+                    <i class="fas fa-list w-4 text-center"></i> List
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 ml-7 text-xs">
+                    <i class="fas fa-plus w-4 text-center"></i> Add New
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-shopping-cart w-5 text-center"></i> Orders
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-users w-5 text-center"></i> Customers
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-tags w-5 text-center"></i> Categories
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-percent w-5 text-center"></i> Coupons
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-chart-bar w-5 text-center"></i> Reports
+                </a>
+                <hr class="border-slate-700 my-3">
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-cog w-5 text-center"></i> Settings
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-red-400">
+                    <i class="fas fa-sign-out-alt w-5 text-center"></i> Logout
+                </a>
+            </nav>
+            <div class="px-4 py-3 border-t border-slate-700">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-xs font-bold">SA</div>
+                    <div class="text-sm">
+                        <p class="font-medium leading-tight">Super Admin</p>
+                        <p class="text-xs text-slate-400">admin@homestore.com</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/50 z-20 lg:hidden" x-show="sidebarOpen" @click="sidebarOpen = false" x-cloak></div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col lg:ml-64">
+            <!-- Top Header -->
+            <header class="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
+                <div class="flex items-center justify-between px-6 py-3">
+                    <div class="flex items-center gap-4">
+                        <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 hover:text-gray-700 lg:hidden">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <div class="relative" x-data="{ open: false }">
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="text" placeholder="Search orders, products..." @focus="open = true" @blur="setTimeout(() => open = false, 200)" class="pl-9 pr-4 py-2 bg-gray-100 border border-transparent focus:border-blue-400 focus:bg-white focus:outline-none rounded-lg text-sm w-64 transition-all">
+                            <div x-show="open" class="absolute top-full left-0 right-0 mt-1 bg-white border rounded-lg shadow-lg py-2 text-sm" x-cloak>
+                                <a href="#" class="block px-4 py-2 hover:bg-gray-50 text-gray-600"><span class="font-medium text-gray-900">iPhone 15</span> — Product</a>
+                                <a href="#" class="block px-4 py-2 hover:bg-gray-50 text-gray-600"><span class="font-medium text-gray-900">#ORD-1024</span> — Order</a>
+                                <a href="#" class="block px-4 py-2 hover:bg-gray-50 text-gray-600"><span class="font-medium text-gray-900">john@email.com</span> — Customer</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-5">
+                        <button class="relative text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-bell text-lg"></i>
+                            <span class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-medium">5</span>
+                        </button>
+                        <button class="relative text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-envelope text-lg"></i>
+                            <span class="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-medium">3</span>
+                        </button>
+                        <div class="flex items-center gap-3 border-l pl-5 border-gray-200">
+                            <div class="text-right text-sm hidden sm:block">
+                                <p class="font-medium text-gray-800 leading-tight">Super Admin</p>
+                                <p class="text-xs text-gray-500">Administrator</p>
+                            </div>
+                            <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm">SA</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- Page Title -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
+                        <p class="text-sm text-gray-500 mt-0.5">Your store overview for today</p>
+                    </div>
+                    <div class="flex items-center gap-3 mt-3 sm:mt-0">
+                        <select class="text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-600 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            <option>Last 7 Days</option>
+                            <option selected>Last 30 Days</option>
+                            <option>This Year</option>
+                        </select>
+                        <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition flex items-center gap-2">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+                    <div class="stat-card bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Total Revenue</p>
+                                <h3 class="text-2xl font-bold text-gray-800 mt-1">$284,590</h3>
+                                <p class="text-sm mt-2"><span class="text-emerald-600 font-medium"><i class="fas fa-arrow-up mr-0.5"></i>12.5%</span> <span class="text-gray-400">from last month</span></p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 text-xl">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Total Orders</p>
+                                <h3 class="text-2xl font-bold text-gray-800 mt-1">3,428</h3>
+                                <p class="text-sm mt-2"><span class="text-emerald-600 font-medium"><i class="fas fa-arrow-up mr-0.5"></i>8.2%</span> <span class="text-gray-400">from last month</span></p>
+                            </div>
+                            <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 text-xl">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Total Products</p>
+                                <h3 class="text-2xl font-bold text-gray-800 mt-1">1,247</h3>
+                                <p class="text-sm mt-2"><span class="text-emerald-600 font-medium"><i class="fas fa-arrow-up mr-0.5"></i>3.1%</span> <span class="text-gray-400">from last month</span></p>
+                            </div>
+                            <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600 text-xl">
+                                <i class="fas fa-box"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Active Users</p>
+                                <h3 class="text-2xl font-bold text-gray-800 mt-1">9,847</h3>
+                                <p class="text-sm mt-2"><span class="text-red-600 font-medium"><i class="fas fa-arrow-down mr-0.5"></i>2.4%</span> <span class="text-gray-400">from last month</span></p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600 text-xl">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5 mb-6">
+                    <!-- Revenue Line Chart -->
+                    <div class="xl:col-span-1 bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-gray-800">Revenue Overview</h3>
+                            <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Last 30 Days</span>
+                        </div>
+                        <canvas id="revenueChart" height="160"></canvas>
+                    </div>
+                    <!-- Orders Bar Chart -->
+                    <div class="xl:col-span-1 bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-gray-800">Orders</h3>
+                            <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">Last 7 Days</span>
+                        </div>
+                        <canvas id="ordersChart" height="160"></canvas>
+                    </div>
+                    <!-- Category Doughnut Chart -->
+                    <div class="xl:col-span-1 bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-gray-800">Sales by Category</h3>
+                            <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">This Month</span>
+                        </div>
+                        <canvas id="categoryChart" height="160"></canvas>
+                    </div>
+                </div>
+
+                <!-- Bottom Row: Recent Orders + Stock Alerts -->
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-6">
+                    <!-- Recent Orders Table -->
+                    <div class="xl:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm">
+                        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                            <h3 class="font-semibold text-gray-800">Recent Orders</h3>
+                            <a href="#" class="text-sm text-blue-600 hover:text-blue-700 font-medium">View All <i class="fas fa-arrow-right ml-1 text-xs"></i></a>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="text-left text-gray-500 text-xs uppercase tracking-wider border-b border-gray-100">
+                                        <th class="px-5 py-3 font-medium">Order #</th>
+                                        <th class="px-5 py-3 font-medium">Customer</th>
+                                        <th class="px-5 py-3 font-medium">Products</th>
+                                        <th class="px-5 py-3 font-medium">Total</th>
+                                        <th class="px-5 py-3 font-medium">Status</th>
+                                        <th class="px-5 py-3 font-medium">Date</th>
+                                        <th class="px-5 py-3 font-medium text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-50">
+                                    <tr class="hover:bg-gray-50 transition">
+                                        <td class="px-5 py-3.5 font-medium text-gray-800">#ORD-1024</td>
+                                        <td class="px-5 py-3.5">
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">JD</div>
+                                                <span class="text-gray-700">John Doe</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-5 py-3.5 text-gray-600">iPhone 15 Pro, Case</td>
+                                        <td class="px-5 py-3.5 font-medium text-gray-800">$1,299</td>
+                                        <td class="px-5 py-3.5"><span class="bg-emerald-100 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">Delivered</span></td>
+                                        <td class="px-5 py-3.5 text-gray-500">May 25, 2026</td>
+                                        <td class="px-5 py-3.5 text-right">
+                                            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 transition">
+                                        <td class="px-5 py-3.5 font-medium text-gray-800">#ORD-1023</td>
+                                        <td class="px-5 py-3.5">
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-7 h-7 bg-purple-100 rounded-full flex items-center justify-center text-xs font-bold text-purple-600">JS</div>
+                                                <span class="text-gray-700">Jane Smith</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-5 py-3.5 text-gray-600">AirPods Pro, Charger</td>
+                                        <td class="px-5 py-3.5 font-medium text-gray-800">$349</td>
+                                        <td class="px-5 py-3.5"><span class="bg-amber-100 text-amber-700 text-xs font-medium px-2.5 py-1 rounded-full">Shipping</span></td>
+                                        <td class="px-5 py-3.5 text-gray-500">May 24, 2026</td>
+                                        <td class="px-5 py-3.5 text-right">
+                                            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 transition">
+                                        <td class="px-5 py-3.5 font-medium text-gray-800">#ORD-1022</td>
+                                        <td class="px-5 py-3.5">
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-7 h-7 bg-rose-100 rounded-full flex items-center justify-center text-xs font-bold text-rose-600">MJ</div>
+                                                <span class="text-gray-700">Mike Johnson</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-5 py-3.5 text-gray-600">MacBook Pro 16"</td>
+                                        <td class="px-5 py-3.5 font-medium text-gray-800">$2,499</td>
+                                        <td class="px-5 py-3.5"><span class="bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-1 rounded-full">Processing</span></td>
+                                        <td class="px-5 py-3.5 text-gray-500">May 23, 2026</td>
+                                        <td class="px-5 py-3.5 text-right">
+                                            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 transition">
+                                        <td class="px-5 py-3.5 font-medium text-gray-800">#ORD-1021</td>
+                                        <td class="px-5 py-3.5">
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-7 h-7 bg-cyan-100 rounded-full flex items-center justify-center text-xs font-bold text-cyan-600">AW</div>
+                                                <span class="text-gray-700">Alice Williams</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-5 py-3.5 text-gray-600">iPad Air, Pencil</td>
+                                        <td class="px-5 py-3.5 font-medium text-gray-800">$749</td>
+                                        <td class="px-5 py-3.5"><span class="bg-red-100 text-red-700 text-xs font-medium px-2.5 py-1 rounded-full">Cancelled</span></td>
+                                        <td class="px-5 py-3.5 text-gray-500">May 22, 2026</td>
+                                        <td class="px-5 py-3.5 text-right">
+                                            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 transition">
+                                        <td class="px-5 py-3.5 font-medium text-gray-800">#ORD-1020</td>
+                                        <td class="px-5 py-3.5">
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-7 h-7 bg-orange-100 rounded-full flex items-center justify-center text-xs font-bold text-orange-600">RB</div>
+                                                <span class="text-gray-700">Robert Brown</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-5 py-3.5 text-gray-600">Apple Watch Ultra</td>
+                                        <td class="px-5 py-3.5 font-medium text-gray-800">$799</td>
+                                        <td class="px-5 py-3.5"><span class="bg-emerald-100 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">Delivered</span></td>
+                                        <td class="px-5 py-3.5 text-gray-500">May 21, 2026</td>
+                                        <td class="px-5 py-3.5 text-right">
+                                            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">View</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Stock Alerts + Today's Summary -->
+                    <div class="xl:col-span-1 space-y-5">
+                        <!-- Stock Alerts -->
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
+                            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                                <h3 class="font-semibold text-gray-800 flex items-center gap-2">
+                                    <i class="fas fa-exclamation-triangle text-amber-500 text-sm"></i> Stock Alerts
+                                </h3>
+                                <span class="bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">6</span>
+                            </div>
+                            <div class="divide-y divide-gray-50">
+                                <div class="flex items-center justify-between px-5 py-3">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-800">iPhone 15 Pro</p>
+                                        <p class="text-xs text-gray-400">SKU: APP-IP15P-256</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-bold text-red-600">3 left</p>
+                                        <a href="#" class="text-xs text-blue-600 hover:underline">Restock</a>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between px-5 py-3">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-800">AirPods Max</p>
+                                        <p class="text-xs text-gray-400">SKU: APP-APM-BLK</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-bold text-red-600">5 left</p>
+                                        <a href="#" class="text-xs text-blue-600 hover:underline">Restock</a>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between px-5 py-3">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-800">MacBook Air M3</p>
+                                        <p class="text-xs text-gray-400">SKU: APP-MBA-M3</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-bold text-amber-600">8 left</p>
+                                        <a href="#" class="text-xs text-blue-600 hover:underline">Restock</a>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between px-5 py-3">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-800">iPad Mini</p>
+                                        <p class="text-xs text-gray-400">SKU: APP-IPM-GR</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-bold text-red-600">2 left</p>
+                                        <a href="#" class="text-xs text-blue-600 hover:underline">Restock</a>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between px-5 py-3">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-800">Apple Watch SE</p>
+                                        <p class="text-xs text-gray-400">SKU: APP-AWS-MGN</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-bold text-red-600">4 left</p>
+                                        <a href="#" class="text-xs text-blue-600 hover:underline">Restock</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Today's Summary -->
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                            <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-calendar-day text-blue-500 text-sm"></i> Today's Summary
+                            </h3>
+                            <div class="space-y-3.5">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600 flex items-center gap-2"><i class="fas fa-shopping-cart text-gray-400 w-4"></i>New Orders</span>
+                                    <span class="font-semibold text-gray-800">24</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600 flex items-center gap-2"><i class="fas fa-dollar-sign text-gray-400 w-4"></i>Revenue Today</span>
+                                    <span class="font-semibold text-gray-800">$8,420</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600 flex items-center gap-2"><i class="fas fa-users text-gray-400 w-4"></i>New Customers</span>
+                                    <span class="font-semibold text-gray-800">18</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600 flex items-center gap-2"><i class="fas fa-undo text-gray-400 w-4"></i>Returns</span>
+                                    <span class="font-semibold text-red-600">3</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600 flex items-center gap-2"><i class="fas fa-hourglass-half text-gray-400 w-4"></i>Pending</span>
+                                    <span class="font-semibold text-amber-600">7</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-gray-700">Conversion Rate</span>
+                                    <span class="text-sm font-bold text-emerald-600">3.42%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                    <div class="bg-emerald-500 h-2 rounded-full" style="width: 3.42%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sales by Category -->
+                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                            <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-chart-pie text-purple-500 text-sm"></i> Sales by Category
+                            </h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-700">Electronics</span>
+                                        <span class="font-medium text-gray-800">$94,200</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 38%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-700">Clothing</span>
+                                        <span class="font-medium text-gray-800">$52,800</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-emerald-500 h-2 rounded-full" style="width: 22%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-700">Home & Garden</span>
+                                        <span class="font-medium text-gray-800">$39,600</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-amber-500 h-2 rounded-full" style="width: 16%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-700">Sports</span>
+                                        <span class="font-medium text-gray-800">$31,200</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-purple-500 h-2 rounded-full" style="width: 12%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-700">Books</span>
+                                        <span class="font-medium text-gray-800">$18,400</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-rose-500 h-2 rounded-full" style="width: 7%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Revenue Chart (Line)
+            new Chart(document.getElementById('revenueChart'), {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 30}, (_, i) => `Day ${i+1}`),
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [12400, 13800, 11200, 15200, 14800, 16500, 14200, 15800, 17200, 16800, 18200, 17600, 19200, 18800, 20400, 19800, 21500, 20800, 22400, 21800, 23500, 22800, 24200, 23800, 25400, 24800, 26200, 25800, 27400, 28400],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59,130,246,0.08)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', maxTicksLimit: 10, font: { size: 10 } } },
+                        y: { grid: { color: '#f1f5f9' }, ticks: { color: '#94a3b8', font: { size: 10 }, callback: v => '$' + (v/1000).toFixed(0) + 'k' } }
+                    }
+                }
+            });
+
+            // Orders Chart (Bar)
+            new Chart(document.getElementById('ordersChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Orders',
+                        data: [42, 56, 38, 72, 64, 48, 32],
+                        backgroundColor: ['#6366f1', '#6366f1', '#6366f1', '#6366f1', '#6366f1', '#6366f1', '#6366f1'],
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                        y: { grid: { color: '#f1f5f9' }, ticks: { color: '#94a3b8', font: { size: 10 } }, beginAtZero: true }
+                    }
+                }
+            });
+
+            // Category Chart (Doughnut)
+            new Chart(document.getElementById('categoryChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Electronics', 'Clothing', 'Home & Garden', 'Sports', 'Books'],
+                    datasets: [{
+                        data: [38, 22, 16, 12, 7],
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#f43f5e'],
+                        borderWidth: 3,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { padding: 12, usePointStyle: true, font: { size: 11 }, color: '#64748b' }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Checkout" %} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-center mb-8">
+            <nav class="flex items-center space-x-4 text-sm">
+                <div class="flex items-center text-gray-500">
+                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 mr-2">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <span>{% trans "Cart" %}</span>
+                </div>
+                <i class="fas fa-chevron-right text-gray-300"></i>
+                <div class="flex items-center text-indigo-600 font-semibold">
+                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-600 text-white mr-2">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <span>{% trans "Checkout" %}</span>
+                </div>
+            </nav>
+        </div>
+
+        <h1 class="text-2xl font-bold text-gray-900 mb-8 text-center">{% trans "Complete Your Order" %}</h1>
+
+        {% if messages %}
+            <div class="max-w-3xl mx-auto mb-6 space-y-2">
+                {% for message in messages %}
+                    <div class="flex items-center space-x-2 px-4 py-3 rounded-lg text-sm font-medium {% if message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200{% elif message.tags == 'success' %}bg-green-50 text-green-700 border border-green-200{% else %}bg-blue-50 text-blue-700 border border-blue-200{% endif %}">
+                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-info-circle{% endif %}"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'orders:place_order' %}" x-data="checkoutApp()">
+            {% csrf_token %}
+            <div class="lg:flex lg:gap-8">
+                <div class="lg:flex-1 space-y-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <h2 class="text-lg font-bold text-gray-900 mb-6">
+                            <i class="fas fa-map-marker-alt mr-2 text-indigo-600"></i>{% trans "Shipping Address" %}
+                        </h2>
+
+                        {% if addresses %}
+                            <div class="mb-6">
+                                <p class="text-sm font-medium text-gray-700 mb-3">{% trans "Select saved address:" %}</p>
+                                <div class="space-y-3">
+                                    {% for addr in addresses %}
+                                        <label class="flex items-start p-4 border rounded-lg cursor-pointer hover:border-indigo-500 transition-colors"
+                                               :class="{'border-indigo-500 bg-indigo-50': selectedAddress === {{ addr.id }}, 'border-gray-200': selectedAddress !== {{ addr.id }}}">
+                                            <input type="radio" name="address" value="{{ addr.id }}" 
+                                                   class="mt-1 text-indigo-600 focus:ring-indigo-500"
+                                                   x-model="selectedAddress"
+                                                   {% if forloop.first %}checked{% endif %}>
+                                            <div class="ml-4">
+                                                <p class="font-medium text-gray-900">{{ addr.full_name }}</p>
+                                                <p class="text-sm text-gray-500">{{ addr.phone }}</p>
+                                                <p class="text-sm text-gray-600 mt-1">
+                                                    {{ addr.street }}, {{ addr.city }}, {{ addr.state }} {{ addr.zip_code }}
+                                                </p>
+                                                <p class="text-sm text-gray-500">{{ addr.country }}</p>
+                                            </div>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="flex items-center my-6">
+                                <hr class="flex-1 border-gray-200">
+                                <span class="px-4 text-sm text-gray-500">{% trans "or" %}</span>
+                                <hr class="flex-1 border-gray-200">
+                            </div>
+                        {% endif %}
+
+                        <div class="space-y-4">
+                            <p class="text-sm font-medium text-gray-700 {% if addresses %}mb-2{% else %}mb-3{% endif %}">
+                                {% if addresses %}<i class="fas fa-plus mr-1 text-indigo-600"></i>{% endif %}
+                                {% if addresses %}{% trans "Add new address" %}{% else %}{% trans "Enter shipping address" %}{% endif %}:
+                            </p>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Full Name" %} *</label>
+                                    <input type="text" name="full_name" required
+                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                                           placeholder="{% trans 'John Doe' %}">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Phone Number" %} *</label>
+                                    <input type="tel" name="phone" required
+                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                                           placeholder="{% trans '+1 (555) 123-4567' %}">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Street Address" %} *</label>
+                                <input type="text" name="street" required
+                                       class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                                       placeholder="{% trans '123 Main Street, Apt 4B' %}">
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "City" %} *</label>
+                                    <input type="text" name="city" required
+                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                                           placeholder="{% trans 'New York' %}">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "State" %} *</label>
+                                    <input type="text" name="state" required
+                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                                           placeholder="{% trans 'NY' %}">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "ZIP Code" %} *</label>
+                                    <input type="text" name="zip_code" required
+                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                                           placeholder="{% trans '10001' %}">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Country" %} *</label>
+                                <select name="country" required
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                                    <option value="United States" selected>{% trans "United States" %}</option>
+                                    <option value="Canada">{% trans "Canada" %}</option>
+                                    <option value="United Kingdom">{% trans "United Kingdom" %}</option>
+                                    <option value="Australia">{% trans "Australia" %}</option>
+                                    <option value="Germany">{% trans "Germany" %}</option>
+                                    <option value="France">{% trans "France" %}</option>
+                                    <option value="Japan">{% trans "Japan" %}</option>
+                                    <option value="Saudi Arabia">{% trans "Saudi Arabia" %}</option>
+                                    <option value="UAE">{% trans "UAE" %}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <h2 class="text-lg font-bold text-gray-900 mb-6">
+                            <i class="fas fa-credit-card mr-2 text-indigo-600"></i>{% trans "Payment Method" %}
+                        </h2>
+
+                        <div class="space-y-3">
+                            <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:border-indigo-500 transition-colors"
+                                   :class="{'border-indigo-500 bg-indigo-50': paymentMethod === 'card', 'border-gray-200': paymentMethod !== 'card'}">
+                                <input type="radio" name="payment_method" value="card" x-model="paymentMethod" 
+                                       class="text-indigo-600 focus:ring-indigo-500" checked>
+                                <div class="ml-4 flex items-center">
+                                    <i class="fas fa-credit-card text-xl text-gray-700 mr-3"></i>
+                                    <div>
+                                        <p class="font-medium text-gray-900">{% trans "Credit / Debit Card" %}</p>
+                                        <p class="text-sm text-gray-500">{% trans "Visa, Mastercard, Amex" %}</p>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:border-indigo-500 transition-colors"
+                                   :class="{'border-indigo-500 bg-indigo-50': paymentMethod === 'paypal', 'border-gray-200': paymentMethod !== 'paypal'}">
+                                <input type="radio" name="payment_method" value="paypal" x-model="paymentMethod"
+                                       class="text-indigo-600 focus:ring-indigo-500">
+                                <div class="ml-4 flex items-center">
+                                    <i class="fab fa-paypal text-xl text-blue-600 mr-3"></i>
+                                    <div>
+                                        <p class="font-medium text-gray-900">{% trans "PayPal" %}</p>
+                                        <p class="text-sm text-gray-500">{% trans "Pay securely with PayPal" %}</p>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:border-indigo-500 transition-colors"
+                                   :class="{'border-indigo-500 bg-indigo-50': paymentMethod === 'cod', 'border-gray-200': paymentMethod !== 'cod'}">
+                                <input type="radio" name="payment_method" value="cod" x-model="paymentMethod"
+                                       class="text-indigo-600 focus:ring-indigo-500">
+                                <div class="ml-4 flex items-center">
+                                    <i class="fas fa-money-bill-wave text-xl text-green-600 mr-3"></i>
+                                    <div>
+                                        <p class="font-medium text-gray-900">{% trans "Cash on Delivery" %}</p>
+                                        <p class="text-sm text-gray-500">{% trans "Pay when you receive your order" %}</p>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div x-show="paymentMethod === 'card'" class="mt-6 p-4 bg-gray-50 rounded-lg">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Card Number" %}</label>
+                                    <input type="text" placeholder="{% trans '1234 5678 9012 3456' %}"
+                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Expiry Date" %}</label>
+                                        <input type="text" placeholder="{% trans 'MM/YY' %}"
+                                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "CVV" %}</label>
+                                        <input type="text" placeholder="{% trans '123' %}"
+                                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:w-96 mt-6 lg:mt-0">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 sticky top-24">
+                        <div class="p-6">
+                            <h2 class="text-lg font-bold text-gray-900 mb-6">
+                                <i class="fas fa-shopping-bag mr-2 text-indigo-600"></i>{% trans "Order Summary" %}
+                            </h2>
+
+                            <div class="max-h-64 overflow-y-auto space-y-4 mb-6">
+                                {% for item in cart.items.all %}
+                                    <div class="flex items-center space-x-3">
+                                        <img src="{{ item.product.thumbnail_url }}" alt="{{ item.product.name }}" loading="lazy"
+                                             class="w-14 h-14 object-cover rounded-lg">
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900 truncate">{{ item.product.name }}</p>
+                                            <p class="text-xs text-gray-500">{% blocktrans with qty=item.quantity %}Qty: {{ qty }}{% endblocktrans %}</p>
+                                        </div>
+                                        <span class="text-sm font-semibold text-gray-900">${{ item.subtotal|floatformat:2 }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            <hr class="border-gray-200 mb-4">
+
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">{% trans "Subtotal" %}</span>
+                                    <span class="font-medium text-gray-900">${{ cart.get_subtotal|floatformat:2 }}</span>
+                                </div>
+
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">{% trans "Shipping" %}</span>
+                                    <span class="font-medium text-gray-900">
+                                        {% if cart.get_subtotal >= 200 %}
+                                            <span class="text-green-600">{% trans "Free" %}</span>
+                                        {% else %}
+                                            $15.00
+                                        {% endif %}
+                                    </span>
+                                </div>
+
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">{% trans "Tax" %} (15%)</span>
+                                    <span class="font-medium text-gray-900">${{ cart.get_tax|floatformat:2 }}</span>
+                                </div>
+
+                                {% if cart.discount_amount %}
+                                    <div class="flex justify-between text-green-600">
+                                        <span>{% trans "Discount" %}</span>
+                                        <span class="font-medium">-${{ cart.get_discount|floatformat:2 }}</span>
+                                    </div>
+                                {% endif %}
+
+                                <hr class="border-gray-200">
+
+                                <div class="flex justify-between text-lg font-bold">
+                                    <span class="text-gray-900">{% trans "Total" %}</span>
+                                    <span class="text-indigo-600">${{ cart.get_total|floatformat:2 }}</span>
+                                </div>
+                            </div>
+
+                            <button type="submit" 
+                                    class="mt-8 w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg text-center transition-all duration-150 shadow-md shadow-indigo-200 hover:shadow-lg">
+                                <i class="fas fa-check-circle mr-2"></i>{% blocktrans with total=cart.get_total|floatformat:2 %}Place Order - ${{ total }}{% endblocktrans %}
+                            </button>
+
+                            <div class="mt-4 text-xs text-center text-gray-400">
+                                <i class="fas fa-shield-alt mr-1"></i>
+                                {% trans "By placing this order you agree to our Terms of Service and Privacy Policy" %}
+                            </div>
+
+                            <div class="mt-4 flex items-center justify-center space-x-4 text-xs text-gray-400">
+                                <i class="fab fa-cc-visa text-xl"></i>
+                                <i class="fab fa-cc-mastercard text-xl"></i>
+                                <i class="fab fa-cc-paypal text-xl"></i>
+                                <i class="fab fa-cc-amex text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function checkoutApp() {
+        return {
+            selectedAddress: {% if addresses %}{{ addresses.0.id }}{% else %}null{% endif %},
+            paymentMethod: 'card'
+        };
+    }
+</script>
+{% endblock %}

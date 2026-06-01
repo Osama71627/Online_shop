@@ -1,0 +1,335 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customers - HomeStore Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .sidebar-link { transition: all 0.2s; }
+        .sidebar-link:hover { background: rgba(255,255,255,0.1); }
+        .sidebar-link.active { background: rgba(255,255,255,0.15); border-left: 3px solid #3b82f6; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans antialiased" x-data="{ sidebarOpen: true, selectAll: false }">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-white flex flex-col transition-all duration-300" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-64'" x-cloak>
+            <div class="flex items-center gap-3 px-6 py-5 border-b border-slate-700">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-lg font-bold">H</div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight">HomeStore</h1>
+                    <p class="text-xs text-slate-400 -mt-0.5">Admin Panel</p>
+                </div>
+            </div>
+            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-th-large w-5 text-center"></i> Dashboard
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-box w-5 text-center"></i> Products
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-shopping-cart w-5 text-center"></i> Orders
+                </a>
+                <a href="#" class="sidebar-link active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white bg-slate-800/50">
+                    <i class="fas fa-users w-5 text-center text-blue-400"></i> Customers
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-tags w-5 text-center"></i> Categories
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-percent w-5 text-center"></i> Coupons
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-chart-bar w-5 text-center"></i> Reports
+                </a>
+                <hr class="border-slate-700 my-3">
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-cog w-5 text-center"></i> Settings
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-red-400">
+                    <i class="fas fa-sign-out-alt w-5 text-center"></i> Logout
+                </a>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col lg:ml-64">
+            <header class="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
+                <div class="flex items-center justify-between px-6 py-3">
+                    <div class="flex items-center gap-4">
+                        <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 hover:text-gray-700 lg:hidden">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="text" placeholder="Search customers..." class="pl-9 pr-4 py-2 bg-gray-100 border border-transparent focus:border-blue-400 focus:bg-white focus:outline-none rounded-lg text-sm w-64 transition-all">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-5">
+                        <button class="relative text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-bell text-lg"></i>
+                            <span class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-medium">5</span>
+                        </button>
+                        <div class="flex items-center gap-3 border-l pl-5 border-gray-200">
+                            <div class="text-right text-sm hidden sm:block">
+                                <p class="font-medium text-gray-800 leading-tight">Super Admin</p>
+                                <p class="text-xs text-gray-500">Administrator</p>
+                            </div>
+                            <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm">SA</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Customers</h2>
+                        <p class="text-sm text-gray-500 mt-0.5">View and manage your customer base</p>
+                    </div>
+                    <div class="flex items-center gap-3 mt-3 sm:mt-0">
+                        <button class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium px-4 py-2.5 rounded-lg transition flex items-center gap-2 shadow-sm">
+                            <i class="fas fa-file-export"></i> Export CSV
+                        </button>
+                        <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition flex items-center gap-2 shadow-sm">
+                            <i class="fas fa-user-plus"></i> Add Customer
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider">Total Customers</p>
+                        <p class="text-xl font-bold text-gray-800 mt-1">9,847</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider">Active This Month</p>
+                        <p class="text-xl font-bold text-emerald-600 mt-1">4,231</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider">New (Today)</p>
+                        <p class="text-xl font-bold text-blue-600 mt-1">18</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider">Avg. Order Value</p>
+                        <p class="text-xl font-bold text-gray-800 mt-1">$189</p>
+                    </div>
+                </div>
+
+                <!-- Search & Filter -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6">
+                    <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                        <div class="relative flex-1">
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" placeholder="Search by name, email, or phone..." class="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                        </div>
+                        <select class="text-sm border border-gray-300 rounded-lg px-3 py-2.5 bg-white text-gray-600 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            <option>All Status</option>
+                            <option>Active</option>
+                            <option>Inactive</option>
+                            <option>Blocked</option>
+                        </select>
+                        <select class="text-sm border border-gray-300 rounded-lg px-3 py-2.5 bg-white text-gray-600 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            <option>All Orders</option>
+                            <option>5+ Orders</option>
+                            <option>10+ Orders</option>
+                            <option>20+ Orders</option>
+                        </select>
+                        <button class="text-sm text-gray-500 hover:text-gray-700 px-3 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            <i class="fas fa-sync-alt mr-1"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Customers Table -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="bg-gray-50 text-left text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                                    <th class="px-5 py-3.5 font-medium"><input type="checkbox" class="rounded border-gray-300" x-model="selectAll"></th>
+                                    <th class="px-5 py-3.5 font-medium">Customer</th>
+                                    <th class="px-5 py-3.5 font-medium">Email</th>
+                                    <th class="px-5 py-3.5 font-medium">Orders</th>
+                                    <th class="px-5 py-3.5 font-medium">Total Spent</th>
+                                    <th class="px-5 py-3.5 font-medium">Joined</th>
+                                    <th class="px-5 py-3.5 font-medium">Status</th>
+                                    <th class="px-5 py-3.5 font-medium text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-5 py-4"><input type="checkbox" class="rounded border-gray-300"></td>
+                                    <td class="px-5 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-blue-600">JD</div>
+                                            <div>
+                                                <p class="font-medium text-gray-800">John Doe</p>
+                                                <p class="text-xs text-gray-400">+1 (555) 123-4567</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4 text-gray-600">john.doe@email.com</td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">24</td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">$12,847</td>
+                                    <td class="px-5 py-4 text-gray-500">Jan 15, 2024</td>
+                                    <td class="px-5 py-4"><span class="bg-emerald-100 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">Active</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="View"><i class="fas fa-eye text-xs"></i></button>
+                                            <button class="text-purple-600 hover:text-purple-800 bg-purple-50 hover:bg-purple-100 p-2 rounded-lg transition" title="Email"><i class="fas fa-envelope text-xs"></i></button>
+                                            <button class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Block"><i class="fas fa-ban text-xs"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-5 py-4"><input type="checkbox" class="rounded border-gray-300"></td>
+                                    <td class="px-5 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 bg-purple-100 rounded-full flex items-center justify-center text-sm font-bold text-purple-600">JS</div>
+                                            <div>
+                                                <p class="font-medium text-gray-800">Jane Smith</p>
+                                                <p class="text-xs text-gray-400">+1 (555) 234-5678</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4 text-gray-600">jane.smith@email.com</td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">18</td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">$8,932</td>
+                                    <td class="px-5 py-4 text-gray-500">Mar 3, 2024</td>
+                                    <td class="px-5 py-4"><span class="bg-emerald-100 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">Active</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="View"><i class="fas fa-eye text-xs"></i></button>
+                                            <button class="text-purple-600 hover:text-purple-800 bg-purple-50 hover:bg-purple-100 p-2 rounded-lg transition" title="Email"><i class="fas fa-envelope text-xs"></i></button>
+                                            <button class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Block"><i class="fas fa-ban text-xs"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-5 py-4"><input type="checkbox" class="rounded border-gray-300"></td>
+                                    <td class="px-5 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 bg-rose-100 rounded-full flex items-center justify-center text-sm font-bold text-rose-600">MJ</div>
+                                            <div>
+                                                <p class="font-medium text-gray-800">Mike Johnson</p>
+                                                <p class="text-xs text-gray-400">+1 (555) 345-6789</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4 text-gray-600">mike.johnson@email.com</td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">31</td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">$24,560</td>
+                                    <td class="px-5 py-4 text-gray-500">Nov 20, 2023</td>
+                                    <td class="px-5 py-4"><span class="bg-emerald-100 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">Active</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="View"><i class="fas fa-eye text-xs"></i></button>
+                                            <button class="text-purple-600 hover:text-purple-800 bg-purple-50 hover:bg-purple-100 p-2 rounded-lg transition" title="Email"><i class="fas fa-envelope text-xs"></i></button>
+                                            <button class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Block"><i class="fas fa-ban text-xs"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-5 py-4"><input type="checkbox" class="rounded border-gray-300"></td>
+                                    <td class="px-5 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 bg-cyan-100 rounded-full flex items-center justify-center text-sm font-bold text-cyan-600">AW</div>
+                                            <div>
+                                                <p class="font-medium text-gray-800">Alice Williams</p>
+                                                <p class="text-xs text-gray-400">+1 (555) 456-7890</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4 text-gray-600">alice.williams@email.com</td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">7</td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">$3,210</td>
+                                    <td class="px-5 py-4 text-gray-500">Aug 12, 2024</td>
+                                    <td class="px-5 py-4"><span class="bg-gray-100 text-gray-600 text-xs font-medium px-2.5 py-1 rounded-full">Inactive</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="View"><i class="fas fa-eye text-xs"></i></button>
+                                            <button class="text-purple-600 hover:text-purple-800 bg-purple-50 hover:bg-purple-100 p-2 rounded-lg transition" title="Email"><i class="fas fa-envelope text-xs"></i></button>
+                                            <button class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Block"><i class="fas fa-ban text-xs"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-5 py-4"><input type="checkbox" class="rounded border-gray-300"></td>
+                                    <td class="px-5 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 bg-orange-100 rounded-full flex items-center justify-center text-sm font-bold text-orange-600">RB</div>
+                                            <div>
+                                                <p class="font-medium text-gray-800">Robert Brown</p>
+                                                <p class="text-xs text-gray-400">+1 (555) 567-8901</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4 text-gray-600">robert.brown@email.com</td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">15</td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">$6,780</td>
+                                    <td class="px-5 py-4 text-gray-500">Feb 28, 2024</td>
+                                    <td class="px-5 py-4"><span class="bg-emerald-100 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">Active</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="View"><i class="fas fa-eye text-xs"></i></button>
+                                            <button class="text-purple-600 hover:text-purple-800 bg-purple-50 hover:bg-purple-100 p-2 rounded-lg transition" title="Email"><i class="fas fa-envelope text-xs"></i></button>
+                                            <button class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Block"><i class="fas fa-ban text-xs"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-5 py-4"><input type="checkbox" class="rounded border-gray-300"></td>
+                                    <td class="px-5 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 bg-emerald-100 rounded-full flex items-center justify-center text-sm font-bold text-emerald-600">EL</div>
+                                            <div>
+                                                <p class="font-medium text-gray-800">Emily Lee</p>
+                                                <p class="text-xs text-gray-400">+1 (555) 678-9012</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4 text-gray-600">emily.lee@email.com</td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">42</td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">$31,420</td>
+                                    <td class="px-5 py-4 text-gray-500">Sep 5, 2023</td>
+                                    <td class="px-5 py-4"><span class="bg-emerald-100 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">Active</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="View"><i class="fas fa-eye text-xs"></i></button>
+                                            <button class="text-purple-600 hover:text-purple-800 bg-purple-50 hover:bg-purple-100 p-2 rounded-lg transition" title="Email"><i class="fas fa-envelope text-xs"></i></button>
+                                            <button class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Block"><i class="fas fa-ban text-xs"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="flex items-center justify-between px-5 py-4 border-t border-gray-100 bg-gray-50">
+                        <p class="text-sm text-gray-500">Showing <span class="font-medium">1</span> to <span class="font-medium">6</span> of <span class="font-medium">9,847</span> customers</p>
+                        <div class="flex gap-1">
+                            <button class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white text-gray-500 hover:bg-gray-50 transition" disabled><i class="fas fa-chevron-left"></i></button>
+                            <button class="px-3 py-1.5 text-sm border border-blue-600 rounded-lg bg-blue-600 text-white font-medium">1</button>
+                            <button class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white text-gray-600 hover:bg-gray-50 transition">2</button>
+                            <button class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white text-gray-600 hover:bg-gray-50 transition">3</button>
+                            <span class="px-2 py-1.5 text-sm text-gray-400">...</span>
+                            <button class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white text-gray-600 hover:bg-gray-50 transition">1,642</button>
+                            <button class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white text-gray-500 hover:bg-gray-50 transition"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

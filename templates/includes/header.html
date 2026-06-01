@@ -1,0 +1,410 @@
+<!-- ============================================ -->
+<!-- Header: HomeStore                              -->
+<!-- Sticky | Glassmorphism | Mega Menu | Mobile   -->
+<!-- ============================================ -->
+{% load static i18n %}
+
+<header x-data="headerApp()"
+        x-init="initHeader()"
+        @scroll.window="onScroll()"
+        :class="{'bg-white/80 backdrop-blur-xl shadow-sm': isScrolled, 'bg-transparent': !isScrolled}"
+        class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+
+  <!-- ── Top Announcement Bar ── -->
+  <div x-show="showAnnouncement"
+       class="bg-neutral-900 text-white text-xs md:text-sm text-center py-2.5 px-4 relative transition-all duration-300">
+    <span class="font-light tracking-wide">
+          <i class="fas fa-truck mr-2 opacity-70"></i>
+      {% blocktrans %}Free Shipping on orders over <strong>$200</strong>{% endblocktrans %}
+    </span>
+    <button @click="showAnnouncement = false; sessionStorage.setItem('announcementClosed', '1')"
+            class="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                         aria-label="{% trans 'Close announcement' %}">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <!-- ── Main Header ── -->
+  <div class="max-w-7xl mx-auto px-4 lg:px-8">
+    <div class="flex items-center justify-between h-16 lg:h-20">
+
+      <!-- Left: Mobile Hamburger -->
+      <div class="flex items-center lg:hidden">
+        <button @click="mobileOpen = true"
+                class="p-2 -ml-2 text-neutral-700 hover:text-neutral-900 transition-colors"
+                                 aria-label="{% trans 'Open menu' %}">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Logo -->
+      <a href="{% url 'core:home' %}"
+         class="text-2xl lg:text-3xl font-bold tracking-tight text-neutral-900 hover:text-neutral-700 transition-colors flex-shrink-0">
+        Home<span class="text-neutral-400">Store</span>
+      </a>
+
+      <!-- Center: Search Bar (hidden on mobile) -->
+      <div class="hidden md:flex flex-1 max-w-xl mx-6 lg:mx-10" x-data="{ q: '', suggestions: [] }">
+        <div class="relative w-full" @click.away="suggestions = []">
+          <form action="{% url 'products:list' %}" method="GET" class="relative">
+            <input type="text"
+                   name="q"
+                   x-model="q"
+                   @input.debounce.300ms="fetchSuggestions"
+                   @focus="fetchSuggestions"
+                   placeholder="Search appliances..."
+                   class="w-full pl-11 pr-4 py-2.5 bg-neutral-100 border border-neutral-200 rounded-full
+                          text-sm text-neutral-800 placeholder-neutral-400
+                          focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:border-transparent
+                          transition-all duration-200"/>
+            <button type="submit"
+                    class="absolute left-0 top-0 h-full pl-3.5 pr-2 text-neutral-400 hover:text-neutral-600 transition-colors">
+              <i class="fas fa-search text-sm"></i>
+            </button>
+          </form>
+          <!-- Autocomplete Dropdown -->
+          <div x-show="suggestions.length > 0"
+               x-transition:enter="transition ease-out duration-200"
+               x-transition:enter-start="opacity-0 -translate-y-2"
+               x-transition:enter-end="opacity-100 translate-y-0"
+               class="absolute top-full mt-2 w-full bg-white rounded-xl shadow-lg border border-neutral-100
+                      overflow-hidden z-50">
+            <template x-for="(item, idx) in suggestions" :key="idx">
+              <a :href="item.url"
+                 class="flex items-center px-4 py-3 hover:bg-neutral-50 transition-colors text-sm text-neutral-700">
+                <i class="fas fa-search text-neutral-300 mr-3 text-xs"></i>
+                <span x-text="item.name"></span>
+              </a>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Icons -->
+      <div class="flex items-center space-x-1 md:space-x-3">
+
+        <!-- Language Toggle -->
+        {% get_current_language as LANGUAGE_CODE %}
+        <form action="{% url 'set_language' %}" method="post" class="hidden sm:block">
+          {% csrf_token %}
+          <input name="next" type="hidden" value="{{ request.path }}">
+          <button name="language" value="{% if LANGUAGE_CODE == 'ar' %}en{% else %}ar{% endif %}"
+                  class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-lg border transition-all duration-200
+                         {% if LANGUAGE_CODE == 'ar' %}bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100
+                         {% else %}bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100{% endif %}"
+                  title="{% if LANGUAGE_CODE == 'ar' %}Switch to English{% else %}التبديل إلى العربية{% endif %}">
+            <i class="fas fa-language text-[10px]"></i>
+            <span>{% if LANGUAGE_CODE == 'ar' %}EN{% else %}AR{% endif %}</span>
+          </button>
+        </form>
+
+        <!-- Wishlist -->
+        <a href="{% url 'wishlist:wishlist' %}"
+           class="relative p-2 text-neutral-600 hover:text-neutral-900 transition-colors"
+           aria-label="{% trans 'Wishlist' %}">
+          <i class="far fa-heart text-xl"></i>
+        </a>
+
+        <!-- Cart -->
+        <a href="{% url 'cart:cart' %}"
+           class="relative p-2 text-neutral-600 hover:text-neutral-900 transition-colors"
+           aria-label="{% trans 'Shopping cart' %}">
+          <i class="fas fa-shopping-bag text-xl"></i>
+          <span x-data="{ count: {{ cart_item_count|default:0 }} }"
+                x-text="count"
+                x-show="count > 0"
+                class="absolute -top-0.5 -right-0.5 bg-neutral-900 text-white text-[10px] font-bold
+                       w-4.5 h-4.5 flex items-center justify-center rounded-full
+                       transition-transform hover:scale-110"
+                style="min-width:18px;height:18px;padding:0 4px;">
+          </span>
+        </a>
+
+        <!-- User Dropdown -->
+        {% if user.is_authenticated %}
+        <div class="relative" x-data="{ open: false }" @click.away="open = false">
+          <button @click="open = !open"
+                  class="p-2 text-neutral-600 hover:text-neutral-900 transition-colors flex items-center"
+                                     aria-label="{% trans 'User menu' %}">
+            <i class="far fa-user-circle text-xl"></i>
+            <i class="fas fa-chevron-down text-[10px] ml-1" :class="{'rotate-180': open}"></i>
+          </button>
+          <div x-show="open"
+               x-transition:enter="transition ease-out duration-200"
+               x-transition:enter-start="opacity-0 -translate-y-2"
+               x-transition:enter-end="opacity-100 translate-y-0"
+               class="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-neutral-100 py-2 z-50">
+            <div class="px-4 py-2 text-xs text-neutral-400 border-b border-neutral-100">
+              {% blocktrans with user_email=user.email|default:user.username %}Signed in as <strong class="text-neutral-700">{{ user_email }}</strong>{% endblocktrans %}
+            </div>
+            <a href="{% url 'accounts:dashboard' %}"
+               class="flex items-center px-4 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors">
+              <i class="fas fa-columns w-5 text-neutral-400"></i> {% trans "Dashboard" %}
+            </a>
+            <a href="{% url 'accounts:profile' %}"
+               class="flex items-center px-4 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors">
+              <i class="fas fa-user-cog w-5 text-neutral-400"></i> {% trans "Profile" %}
+            </a>
+            <a href="{% url 'orders:history' %}"
+               class="flex items-center px-4 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors">
+              <i class="fas fa-box w-5 text-neutral-400"></i> {% trans "Orders" %}
+            </a>
+            <hr class="my-1 border-neutral-100">
+            <form method="POST" action="{% url 'accounts:logout' %}">
+              {% csrf_token %}
+              <button type="submit"
+                      class="w-full flex items-center px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors">
+                <i class="fas fa-sign-out-alt w-5"></i> {% trans "Logout" %}
+              </button>
+            </form>
+          </div>
+        </div>
+        {% else %}
+        <div class="flex items-center space-x-1">
+          <a href="{% url 'accounts:login' %}"
+             class="hidden sm:inline-flex text-sm text-neutral-600 hover:text-neutral-900 px-3 py-2 transition-colors">
+            {% trans "Login" %}
+          </a>
+          <a href="{% url 'accounts:register' %}"
+             class="hidden sm:inline-flex text-sm bg-neutral-900 text-white hover:bg-neutral-800
+                    px-4 py-2 rounded-full transition-all duration-200 shadow-sm hover:shadow-md">
+            {% trans "Register" %}
+          </a>
+          <a href="{% url 'accounts:login' %}"
+             class="sm:hidden p-2 text-neutral-600 hover:text-neutral-900 transition-colors"
+             aria-label="{% trans 'Login' %}">
+            <i class="far fa-user-circle text-xl"></i>
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Desktop Navigation / Mega Menu ── -->
+  <nav class="hidden lg:block border-t border-neutral-100">
+    <div class="max-w-7xl mx-auto px-8">
+      <ul class="flex items-center justify-center space-x-1">
+        <!-- Categories Mega Menu -->
+        <li class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+          <button @click="open = !open"
+                  class="flex items-center px-4 py-3 text-sm font-medium text-neutral-700 hover:text-neutral-900
+                         transition-colors rounded-lg hover:bg-neutral-50">
+            <i class="fas fa-th-large mr-2 text-neutral-400"></i> {% trans "Categories" %}
+            <i class="fas fa-chevron-down ml-1.5 text-[10px] transition-transform"
+               :class="{'rotate-180': open}"></i>
+          </button>
+          <!-- Mega Dropdown -->
+          <div x-show="open"
+               x-transition:enter="transition ease-out duration-200"
+               x-transition:enter-start="opacity-0 -translate-y-2"
+               x-transition:enter-end="opacity-100 translate-y-0"
+               @click.away="open = false"
+               class="absolute left-0 mt-0 w-[600px] bg-white rounded-2xl shadow-xl border border-neutral-100
+                      p-6 z-50 grid grid-cols-3 gap-6">
+            {% for category in categories|default:categories %}
+            <div>
+              <h3 class="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">
+                <a href="{% url 'products:list' %}?category={{ category.slug }}" class="hover:text-neutral-700 transition-colors">
+                  {{ category.name }}
+                </a>
+              </h3>
+                    <ul class="space-y-2">
+                      <li>
+                        <a href="{% url 'products:list' %}?category={{ category.slug }}"
+                           class="text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+                           {% trans "View All" %}
+                        </a>
+                      </li>
+                    </ul>
+            </div>
+            {% endfor %}
+          </div>
+        </li>
+
+        <!-- Products -->
+        <li>
+          <a href="{% url 'products:list' %}"
+             class="block px-4 py-3 text-sm font-medium text-neutral-700 hover:text-neutral-900
+                    transition-colors rounded-lg hover:bg-neutral-50">
+            <i class="fas fa-box mr-2 text-neutral-400"></i> {% trans "Products" %}
+          </a>
+        </li>
+
+        <!-- Deals -->
+        <li>
+          <a href="{% url 'products:list' %}"
+             class="block px-4 py-3 text-sm font-medium text-neutral-700 hover:text-neutral-900
+                    transition-colors rounded-lg hover:bg-neutral-50">
+            <i class="fas fa-tag mr-2 text-neutral-400"></i> {% trans "Deals" %}
+          </a>
+        </li>
+
+        <!-- About -->
+        <li>
+          <a href="{% url 'core:about' %}"
+             class="block px-4 py-3 text-sm font-medium text-neutral-700 hover:text-neutral-900
+                    transition-colors rounded-lg hover:bg-neutral-50">
+            <i class="fas fa-info-circle mr-2 text-neutral-400"></i> {% trans "About" %}
+          </a>
+        </li>
+
+        <!-- Contact -->
+        <li>
+          <a href="{% url 'core:contact' %}"
+             class="block px-4 py-3 text-sm font-medium text-neutral-700 hover:text-neutral-900
+                    transition-colors rounded-lg hover:bg-neutral-50">
+            <i class="fas fa-envelope mr-2 text-neutral-400"></i> {% trans "Contact" %}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── Mobile Slide-out Menu ── -->
+  <div x-show="mobileOpen"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0"
+       x-transition:enter-end="opacity-100"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100"
+       x-transition:leave-end="opacity-0"
+       class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 lg:hidden"
+       @click="mobileOpen = false">
+  </div>
+
+  <div x-show="mobileOpen"
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="-translate-x-full"
+       x-transition:enter-end="translate-x-0"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="translate-x-0"
+       x-transition:leave-end="-translate-x-full"
+       @click.away="mobileOpen = false"
+       class="fixed top-0 left-0 bottom-0 w-80 max-w-[85vw] bg-white z-50 shadow-2xl lg:hidden overflow-y-auto">
+
+    <!-- Mobile Header -->
+    <div class="flex items-center justify-between p-4 border-b border-neutral-100">
+      <span class="text-xl font-bold text-neutral-900">Home<span class="text-neutral-400">Store</span></span>
+      <button @click="mobileOpen = false"
+              class="p-2 text-neutral-400 hover:text-neutral-600 transition-colors"
+              aria-label="{% trans 'Close menu' %}">
+        <i class="fas fa-times text-lg"></i>
+      </button>
+    </div>
+
+    <!-- Search (Mobile) -->
+    <div class="p-4 border-b border-neutral-100">
+      <form action="{% url 'products:list' %}" method="GET" class="relative">
+        <input type="text" name="q" placeholder="Search appliances..."
+               class="w-full pl-10 pr-4 py-2.5 bg-neutral-100 border border-neutral-200 rounded-full
+                      text-sm text-neutral-800 placeholder-neutral-400
+                      focus:outline-none focus:ring-2 focus:ring-neutral-300"/>
+        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm"></i>
+      </form>
+    </div>
+
+    <!-- Mobile Nav Links -->
+    <div class="py-2">
+      <a href="{% url 'core:home' %}"
+         class="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors">
+        <i class="fas fa-home w-6 text-neutral-400"></i> {% trans "Home" %}
+      </a>
+
+      <!-- Categories (expandable) -->
+      <div x-data="{ catOpen: false }">
+        <button @click="catOpen = !catOpen"
+                class="flex items-center justify-between w-full px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors">
+          <span><i class="fas fa-th-large w-6 text-neutral-400"></i> {% trans "Categories" %}</span>
+          <i class="fas fa-chevron-down text-[10px] transition-transform" :class="{'rotate-180': catOpen}"></i>
+        </button>
+        <div x-show="catOpen" class="bg-neutral-50 py-1">
+          <a href="{% url 'products:list' %}"
+             class="block px-10 py-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+            {% trans "All Products" %}
+          </a>
+          <a href="{% url 'products:list' %}?category=kitchen"
+             class="block px-10 py-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+            {% trans "Kitchen" %}
+          </a>
+          <a href="{% url 'products:list' %}?category=laundry"
+             class="block px-10 py-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+            {% trans "Laundry" %}
+          </a>
+          <a href="{% url 'products:list' %}?category=heating-cooling"
+             class="block px-10 py-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+            {% trans "Heating & Cooling" %}
+          </a>
+        </div>
+      </div>
+
+      <a href="{% url 'products:list' %}"
+         class="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors">
+        <i class="fas fa-box w-6 text-neutral-400"></i> {% trans "Products" %}
+      </a>
+      <a href="{% url 'products:list' %}"
+         class="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors">
+        <i class="fas fa-tag w-6 text-neutral-400"></i> {% trans "Deals" %}
+      </a>
+      <a href="{% url 'core:about' %}"
+         class="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors">
+        <i class="fas fa-info-circle w-6 text-neutral-400"></i> {% trans "About" %}
+      </a>
+      <a href="{% url 'core:contact' %}"
+         class="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors">
+        <i class="fas fa-envelope w-6 text-neutral-400"></i> {% trans "Contact" %}
+      </a>
+    </div>
+
+    <!-- Mobile Auth -->
+    <div class="border-t border-neutral-100 p-4">
+      {% if user.is_authenticated %}
+      <div class="text-xs text-neutral-400 mb-3">{{ user.email|default:user.username }}</div>
+      <a href="{% url 'accounts:dashboard' %}"
+         class="block w-full text-center py-2.5 text-sm bg-neutral-900 text-white rounded-full hover:bg-neutral-800 transition-colors mb-2">
+        {% trans "Dashboard" %}
+      </a>
+      <form method="POST" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <button type="submit"
+                class="block w-full text-center py-2.5 text-sm text-red-500 border border-red-200 rounded-full hover:bg-red-50 transition-colors">
+          {% trans "Logout" %}
+        </button>
+      </form>
+      {% else %}
+      <a href="{% url 'accounts:login' %}"
+         class="block w-full text-center py-2.5 text-sm bg-neutral-900 text-white rounded-full hover:bg-neutral-800 transition-colors mb-2">
+        {% trans "Login" %}
+      </a>
+      <a href="{% url 'accounts:register' %}"
+         class="block w-full text-center py-2.5 text-sm text-neutral-700 border border-neutral-300 rounded-full hover:bg-neutral-50 transition-colors">
+        {% trans "Register" %}
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</header>
+
+<!-- Spacer for fixed header (size adjusts with announcement bar) -->
+<div x-data="{ ann: !sessionStorage.getItem('announcementClosed') }"
+     :class="ann ? 'h-[104px] sm:h-[108px] lg:h-[124px]' : 'h-16 lg:h-20'"
+     class="transition-all duration-300"></div>
+
+<script>
+  function headerApp() {
+    return {
+      isScrolled: false,
+      showAnnouncement: !sessionStorage.getItem('announcementClosed'),
+      mobileOpen: false,
+      onScroll() {
+        this.isScrolled = window.scrollY > 10;
+      },
+      initHeader() {
+        this.isScrolled = window.scrollY > 10;
+      },
+      fetchSuggestions() {
+        this.suggestions = [];
+      }
+    };
+  }
+</script>

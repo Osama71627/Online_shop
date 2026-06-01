@@ -1,0 +1,331 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% trans "Payment" %} - HomeStore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .payment-method { transition: all 0.2s; cursor: pointer; }
+        .payment-method:hover { border-color: #3b82f6; background: #f0f5ff; }
+        .payment-method.selected { border-color: #3b82f6; background: #eff6ff; box-shadow: 0 0 0 1px #3b82f6; }
+        .card-input { transition: all 0.2s; }
+        .card-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans antialiased" x-data="{
+    paymentMethod: 'card',
+    cardNumber: '',
+    cardExpiry: '',
+    cardCvv: '',
+    cardName: '',
+    processing: false,
+    formatCardNumber() {
+        let v = this.cardNumber.replace(/\D/g, '').substring(0, 16);
+        let parts = v.match(/.{1,4}/g);
+        this.cardNumber = parts ? parts.join(' ') : v;
+    },
+    formatExpiry() {
+        let v = this.cardExpiry.replace(/\D/g, '').substring(0, 4);
+        if (v.length > 2) v = v.substring(0, 2) + '/' + v.substring(2);
+        this.cardExpiry = v;
+    },
+    submitPayment() {
+        this.processing = true;
+        setTimeout(() => this.processing = false, 3000);
+    }
+}">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 shadow-sm">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-base font-bold text-white">H</div>
+                    <span class="text-lg font-bold text-gray-800">HomeStore</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-lock text-emerald-500 text-sm"></i>
+                    <span class="text-sm text-gray-500 font-medium">{% trans "Secure Checkout" %}</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <!-- Payment Form -->
+                <div class="lg:col-span-3">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6">{% trans "Payment Method" %}</h2>
+
+                    <!-- Payment Method Selection -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+                        <template x-for="method in [
+                            { id: 'card', label: '{% trans "Credit Card" %}', icon: 'fa-credit-card', color: 'text-blue-600' },
+                            { id: 'paypal', label: '{% trans "PayPal" %}', icon: 'fa-paypal', color: 'text-blue-800' },
+                            { id: 'applepay', label: '{% trans "Apple Pay" %}', icon: 'fa-apple-pay', color: 'text-black' },
+                            { id: 'stripe', label: '{% trans "Stripe" %}', icon: 'fa-cc-stripe', color: 'text-purple-600' },
+                            { id: 'cod', label: '{% trans "Cash on Delivery" %}', icon: 'fa-money-bill-wave', color: 'text-emerald-600' }
+                        ]">
+                            <div @click="paymentMethod = method.id" class="payment-method border-2 rounded-xl p-4 text-center" :class="paymentMethod === method.id ? 'selected border-blue-500 bg-blue-50' : 'border-gray-200 bg-white'">
+                                <i :class="'fab ' + method.icon + ' ' + method.color + ' text-2xl mb-1.5'"></i>
+                                <p class="text-xs font-medium text-gray-700" x-text="method.label"></p>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Credit Card Form -->
+                    <div x-show="paymentMethod === 'card'" x-cloak>
+                        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+                            <div class="flex items-center gap-3 mb-5">
+                                <i class="fas fa-credit-card text-blue-600 text-lg"></i>
+                                <h3 class="font-semibold text-gray-800">{% trans "Enter Card Details" %}</h3>
+                                <div class="ml-auto flex gap-1.5">
+                                    <i class="fab fa-cc-visa text-xl text-blue-600"></i>
+                                    <i class="fab fa-cc-mastercard text-xl text-red-500"></i>
+                                    <i class="fab fa-cc-amex text-xl text-blue-400"></i>
+                                    <i class="fab fa-cc-discover text-xl text-orange-500"></i>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Cardholder Name" %}</label>
+                                    <input type="text" x-model="cardName" placeholder="John Doe" class="card-input w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Card Number" %}</label>
+                                    <div class="relative">
+                                        <input type="text" x-model="cardNumber" @input="formatCardNumber" placeholder="1234 5678 9012 3456" maxlength="19" class="card-input w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none tracking-wider font-mono">
+                                        <div class="absolute right-3 top-1/2 -translate-y-1/2">
+                                            <i class="fas fa-credit-card text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Expiry Date" %}</label>
+                                        <input type="text" x-model="cardExpiry" @input="formatExpiry" placeholder="MM/YY" maxlength="5" class="card-input w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none font-mono">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "CVV" %}</label>
+                                        <div class="relative">
+                                            <input type="text" x-model="cardCvv" @input="cardCvv = cardCvv.replace(/\D/g,'').substring(0,4)" placeholder="123" maxlength="4" class="card-input w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none font-mono">
+                                            <div class="absolute right-3 top-1/2 -translate-y-1/2">
+                                                <i class="fas fa-question-circle text-gray-400 text-sm cursor-help" title="{% trans "3-4 digit security code" %}"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card Preview -->
+                                <div class="mt-4 bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 rounded-2xl p-5 text-white shadow-xl">
+                                    <div class="flex justify-between items-start mb-6">
+                                        <div>
+                                            <p class="text-[10px] uppercase tracking-widest opacity-70">{% trans "Cardholder" %}</p>
+                                            <p class="text-sm font-medium tracking-wide" x-text="cardName || 'John Doe'" style="min-height: 1.25rem;"></p>
+                                        </div>
+                                        <i class="fas fa-wifi text-lg rotate-90 opacity-70"></i>
+                                    </div>
+                                    <p class="text-lg tracking-widest font-mono font-medium mb-4" x-text="cardNumber || '•••• •••• •••• ••••'"></p>
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-[10px] uppercase tracking-widest opacity-70">{% trans "Expires" %}</p>
+                                            <p class="text-sm font-mono" x-text="cardExpiry || 'MM/YY'"></p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-[10px] uppercase tracking-widest opacity-70">{% trans "CVV" %}</p>
+                                            <p class="text-sm font-mono" x-text="cardCvv ? '•••' : '•••'"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PayPal -->
+                    <div x-show="paymentMethod === 'paypal'" x-cloak class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 text-center">
+                        <i class="fab fa-paypal text-5xl text-blue-700 mb-4"></i>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">{% trans "Pay with PayPal" %}</h3>
+                        <p class="text-sm text-gray-500 mb-5">{% trans "You'll be redirected to PayPal to complete your payment securely." %}</p>
+                        <button class="bg-blue-700 hover:bg-blue-800 text-white font-bold px-8 py-3 rounded-full transition shadow-md flex items-center gap-2 mx-auto text-sm">
+                            <i class="fab fa-paypal"></i> {% trans "Continue with PayPal" %}
+                        </button>
+                    </div>
+
+                    <!-- Apple Pay -->
+                    <div x-show="paymentMethod === 'applepay'" x-cloak class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 text-center">
+                        <i class="fab fa-apple-pay text-5xl text-black mb-4"></i>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">{% trans "Apple Pay" %}</h3>
+                        <p class="text-sm text-gray-500 mb-5">{% trans "Use Apple Pay for a fast and secure checkout." %}</p>
+                        <button class="bg-black hover:bg-gray-800 text-white font-bold px-8 py-3 rounded-full transition shadow-md flex items-center gap-2 mx-auto text-sm">
+                            <i class="fab fa-apple"></i> {% trans "Pay with Apple Pay" %}
+                        </button>
+                    </div>
+
+                    <!-- Stripe -->
+                    <div x-show="paymentMethod === 'stripe'" x-cloak class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 text-center">
+                        <i class="fab fa-cc-stripe text-5xl text-purple-600 mb-4"></i>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">{% trans "Pay with Stripe" %}</h3>
+                        <p class="text-sm text-gray-500 mb-5">{% trans "Securely pay via Stripe. All major cards accepted." %}</p>
+                        <button class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-8 py-3 rounded-full transition shadow-md flex items-center gap-2 mx-auto text-sm">
+                            <i class="fas fa-lock"></i> {% trans "Pay with Stripe" %}
+                        </button>
+                    </div>
+
+                    <!-- Cash on Delivery -->
+                    <div x-show="paymentMethod === 'cod'" x-cloak class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 text-center">
+                        <i class="fas fa-money-bill-wave text-5xl text-emerald-600 mb-4"></i>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">{% trans "Cash on Delivery" %}</h3>
+                        <p class="text-sm text-gray-500 mb-5">{% trans "Pay when your order is delivered. No additional fees." %}</p>
+                        <div class="bg-emerald-50 text-emerald-700 text-sm font-medium px-4 py-3 rounded-xl inline-flex items-center gap-2">
+                            <i class="fas fa-check-circle"></i> {% trans "Available for your location" %}
+                        </div>
+                    </div>
+
+                    <!-- Pay Now Button -->
+                    <div class="mt-6">
+                        <form action="{% url 'payments:process' order.id %}" method="POST" @submit="submitPayment">
+                            {% csrf_token %}
+                            <button type="submit" :disabled="processing" class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 text-sm">
+                                <template x-if="!processing">
+                                    <span><i class="fas fa-lock"></i> {% trans "Pay" %} ${{ order.total|default:'1,299.00' }}</span>
+                                </template>
+                                <template x-if="processing">
+                                    <span><i class="fas fa-spinner fa-spin"></i> {% trans "Processing Payment..." %}</span>
+                                </template>
+                            </button>
+                        </form>
+                        <p class="text-xs text-gray-400 text-center mt-3">
+                            <i class="fas fa-shield-alt text-emerald-500 mr-1"></i> {% trans "Your payment information is encrypted and secure" %}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sticky top-6">
+                        <h3 class="font-bold text-gray-800 mb-5 flex items-center gap-2">
+                            <i class="fas fa-receipt text-blue-500"></i> {% trans "Order Summary" %}
+                        </h3>
+
+                        <!-- Order Info -->
+                        <div class="space-y-3 pb-4 border-b border-gray-100 mb-4">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">{% trans "Order #" %}</span>
+                                <span class="font-medium text-gray-800">ORD-1024</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">{% trans "Date" %}</span>
+                                <span class="font-medium text-gray-800">May 26, 2026</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">{% trans "Customer" %}</span>
+                                <span class="font-medium text-gray-800">John Doe</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">{% trans "Email" %}</span>
+                                <span class="font-medium text-gray-800">john@email.com</span>
+                            </div>
+                        </div>
+
+                        <!-- Items -->
+                        <div class="space-y-3 pb-4 border-b border-gray-100 mb-4">
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{% trans "Items" %} (3)</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">
+                                        <i class="fas fa-mobile-alt"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-800">iPhone 15 Pro</p>
+                                        <p class="text-xs text-gray-400">{% trans "Qty:" %} 1</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-medium text-gray-800">$1,199</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">
+                                        <i class="fas fa-headphones"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-800">AirPods Pro</p>
+                                        <p class="text-xs text-gray-400">{% trans "Qty:" %} 1</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-medium text-gray-800">$249</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">
+                                        <i class="fas fa-plug"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-800">USB-C Charger</p>
+                                        <p class="text-xs text-gray-400">{% trans "Qty:" %} 1</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-medium text-gray-800">$49</span>
+                            </div>
+                        </div>
+
+                        <!-- Pricing -->
+                        <div class="space-y-2 mb-5">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">{% trans "Subtotal" %}</span>
+                                <span class="text-gray-800">$1,497</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">{% trans "Shipping" %}</span>
+                                <span class="text-emerald-600 font-medium">$0 ({% trans "Free" %})</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">{% trans "Tax (8%)" %}</span>
+                                <span class="text-gray-800">$119.76</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">{% trans "Discount" %}</span>
+                                <span class="text-red-500 font-medium">-$29.94</span>
+                            </div>
+                            <div class="flex justify-between text-base font-bold pt-2 border-t border-gray-200">
+                                <span class="text-gray-900">{% trans "Total" %}</span>
+                                <span class="text-gray-900">$1,586.82</span>
+                            </div>
+                        </div>
+
+                        <!-- Shipping Info -->
+                        <div class="bg-gray-50 rounded-xl p-4 text-sm">
+                            <p class="font-medium text-gray-700 mb-2 flex items-center gap-2">
+                                <i class="fas fa-truck text-blue-500"></i> {% trans "Shipping to" %}
+                            </p>
+                            <p class="text-gray-600">123 Main Street, Apt 4B</p>
+                            <p class="text-gray-600">New York, NY 10001</p>
+                            <p class="text-gray-600">United States</p>
+                        </div>
+
+                        <!-- Trust Badges -->
+                        <div class="flex justify-center gap-4 mt-5 text-gray-400 text-xs">
+                            <span><i class="fas fa-lock mr-1"></i> {% trans "SSL Secure" %}</span>
+                            <span><i class="fas fa-shield-alt mr-1"></i> {% trans "Buyer Protection" %}</span>
+                            <span><i class="fas fa-undo mr-1"></i> {% trans "30-Day Returns" %}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="border-t border-gray-200 bg-white mt-8">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between text-xs text-gray-400">
+                <p>{% blocktrans %}&copy; 2026 HomeStore. All rights reserved.{% endblocktrans %}</p>
+                <div class="flex gap-4">
+                    <a href="#" class="hover:text-gray-600">{% trans "Privacy Policy" %}</a>
+                    <a href="#" class="hover:text-gray-600">{% trans "Terms of Service" %}</a>
+                    <a href="#" class="hover:text-gray-600">{% trans "Contact" %}</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

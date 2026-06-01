@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block meta_description %}{% trans "Your payment was successful! Thank you for shopping at HomeStore." %}{% endblock %}
+{% block title %}{% trans "Payment Successful" %} - HomeStore{% endblock %}
+{% block og_title %}{% trans "Payment Successful" %} - HomeStore{% endblock %}
+{% block og_description %}{% trans "Your order has been confirmed. Thank you for shopping at HomeStore." %}{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center py-16 md:py-24 bg-neutral-50">
+  <div class="max-w-lg mx-auto px-4 text-center">
+    <!-- Animated Checkmark -->
+    <div class="mx-auto mb-8 w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center"
+         x-data="{ show: false }"
+         x-init="setTimeout(() => show = true, 200)"
+         x-show="show"
+         x-transition:enter="transition-all duration-500 ease-out"
+         x-transition:enter-start="opacity-0 scale-50"
+         x-transition:enter-end="opacity-100 scale-100">
+      <i class="fas fa-check text-4xl text-emerald-600"></i>
+    </div>
+
+    <h1 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-4 animate-fade-in">
+      {% trans "Payment Successful!" %}
+    </h1>
+    <p class="text-lg text-neutral-600 mb-2 animate-slide-up">
+      {% blocktrans %}Thank you for your order,{% endblocktrans %} <strong class="text-neutral-900">{{ order.user.get_full_name|default:order.user.email }}</strong>.
+    </p>
+    <p class="text-neutral-500 mb-6 animate-slide-up">
+      {% trans "Your payment has been processed and your order is being prepared." %}
+    </p>
+
+    <!-- Order Number -->
+    <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 mb-8 inline-block animate-scale-in">
+      <p class="text-xs text-neutral-400 uppercase tracking-widest mb-1">{% trans "Order Number" %}</p>
+      <p class="text-2xl font-bold text-neutral-900 font-mono tracking-wide">{{ order.order_number }}</p>
+    </div>
+
+    <div class="space-y-4">
+      <a href="{% url 'products:list' %}"
+         class="inline-flex items-center justify-center px-8 py-3 bg-neutral-900 text-white text-sm font-semibold rounded-full hover:bg-neutral-800 transition-all duration-200 shadow-sm hover:shadow-md w-full sm:w-auto">
+        <i class="fas fa-shopping-bag mr-2"></i> {% trans "Continue Shopping" %}
+      </a>
+      <br class="hidden sm:inline">
+      <a href="{% url 'orders:history' %}"
+         class="inline-flex items-center justify-center px-8 py-3 text-sm font-semibold text-neutral-700 rounded-full hover:bg-neutral-100 transition-all duration-200 w-full sm:w-auto">
+        <i class="fas fa-box mr-2"></i> {% trans "View My Orders" %}
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

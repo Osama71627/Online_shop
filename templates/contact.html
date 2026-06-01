@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block meta_description %}{% trans "Get in touch with HomeStore. Contact us for inquiries, support, or feedback. We're here to help with all your home appliance needs." %}{% endblock %}
+{% block meta_keywords %}{% trans "contact HomeStore, customer support, appliance inquiries, store locations" %}{% endblock %}
+
+{% block title %}{% trans "Contact Us" %} - HomeStore{% endblock %}
+{% block og_title %}{% trans "Contact HomeStore - We're Here to Help" %}{% endblock %}
+{% block og_description %}{% trans "Reach out to HomeStore — call, email, or visit us. Our team is ready to assist you." %}{% endblock %}
+
+{% block content %}
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- Hero Section                                       -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="relative bg-neutral-900 text-white overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900"></div>
+  <div class="relative max-w-7xl mx-auto px-4 lg:px-8 py-20 md:py-28 lg:py-32">
+    <div class="max-w-3xl">
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-neutral-300 mb-6">
+        <i class="fas fa-envelope mr-2"></i> {% trans "Contact" %}
+      </span>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight mb-6">
+        {% trans "Get in" %} <span class="text-neutral-400">{% trans "Touch" %}</span>
+      </h1>
+      <p class="text-lg md:text-xl text-neutral-400 leading-relaxed max-w-2xl">
+        {% blocktrans %}Have a question, need support, or just want to say hello? We'd love to hear from you.{% endblocktrans %}
+      </p>
+    </div>
+  </div>
+  <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-neutral-50 to-transparent"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- Contact Form + Info                                -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="py-16 md:py-24 bg-neutral-50">
+  <div class="max-w-7xl mx-auto px-4 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16">
+
+      <!-- Contact Form -->
+      <div class="lg:col-span-3">
+        <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 p-8 md:p-10">
+          <h2 class="text-2xl font-bold text-neutral-900 mb-2">{% trans "Send Us a Message" %}</h2>
+          <p class="text-sm text-neutral-500 mb-8">{% blocktrans %}Fill out the form below and we'll get back to you within 24 hours.{% endblocktrans %}</p>
+
+          <form method="post" action="{% url 'core:contact' %}" class="space-y-5">
+            {% csrf_token %}
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label for="id_name" class="block text-sm font-medium text-neutral-700 mb-1.5">{% trans "Full Name" %} <span class="text-red-400">*</span></label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-400">
+                    <i class="fas fa-user text-sm"></i>
+                  </div>
+                  <input type="text" id="id_name" name="name" required
+                         class="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200"
+                         placeholder="John Doe">
+                </div>
+              </div>
+              <div>
+                <label for="id_email" class="block text-sm font-medium text-neutral-700 mb-1.5">{% trans "Email Address" %} <span class="text-red-400">*</span></label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-400">
+                    <i class="fas fa-envelope text-sm"></i>
+                  </div>
+                  <input type="email" id="id_email" name="email" required
+                         class="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200"
+                         placeholder="john@example.com">
+                </div>
+              </div>
+            </div>
+
+            <div>
+                <label for="id_subject" class="block text-sm font-medium text-neutral-700 mb-1.5">{% trans "Subject" %} <span class="text-red-400">*</span></label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-400">
+                  <i class="fas fa-tag text-sm"></i>
+                </div>
+                <input type="text" id="id_subject" name="subject" required
+                       class="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200"
+                       placeholder="How can we help you?">
+              </div>
+            </div>
+
+            <div>
+                <label for="id_message" class="block text-sm font-medium text-neutral-700 mb-1.5">{% trans "Message" %} <span class="text-red-400">*</span></label>
+              <textarea id="id_message" name="message" rows="5" required
+                        class="w-full px-4 py-3 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200 resize-y"
+                        placeholder="Tell us more about your inquiry..."></textarea>
+            </div>
+
+            <button type="submit"
+                    class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 bg-neutral-900 text-white text-sm font-semibold rounded-xl hover:bg-neutral-800 transition-all duration-200 shadow-sm hover:shadow-md">
+              <i class="fas fa-paper-plane mr-2"></i> {% trans "Send Message" %}
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Contact Info Cards -->
+      <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 flex items-start gap-4">
+          <div class="w-12 h-12 rounded-xl bg-neutral-900 text-white flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-neutral-900 mb-1">{% trans "Our Address" %}</h3>
+            <p class="text-sm text-neutral-600 leading-relaxed">{% trans "123 Commerce Street, Suite 200" %}<br>{% trans "San Francisco, CA 94102" %}</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 flex items-start gap-4">
+          <div class="w-12 h-12 rounded-xl bg-neutral-900 text-white flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-phone"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-neutral-900 mb-1">{% trans "Phone" %}</h3>
+            <p class="text-sm text-neutral-600">+1 (800) 123-4567</p>
+            <p class="text-xs text-neutral-400 mt-0.5">{% trans "Toll-free, Mon–Fri 9am–6pm PST" %}</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 flex items-start gap-4">
+          <div class="w-12 h-12 rounded-xl bg-neutral-900 text-white flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-neutral-900 mb-1">{% trans "Email" %}</h3>
+            <p class="text-sm text-neutral-600">support@homestore.com</p>
+            <p class="text-xs text-neutral-400 mt-0.5">{% trans "We reply within 24 hours" %}</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 flex items-start gap-4">
+          <div class="w-12 h-12 rounded-xl bg-neutral-900 text-white flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-neutral-900 mb-1">{% trans "Working Hours" %}</h3>
+            <div class="text-sm text-neutral-600 space-y-0.5">
+              <p>{% trans "Mon – Fri: 9:00 AM – 6:00 PM" %}</p>
+              <p>{% trans "Saturday: 10:00 AM – 4:00 PM" %}</p>
+              <p>{% trans "Sunday: Closed" %}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Social Links -->
+        <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6">
+          <h3 class="text-sm font-semibold text-neutral-900 mb-4">{% trans "Follow Us" %}</h3>
+          <div class="flex items-center gap-3">
+            <a href="#" aria-label="Facebook"
+               class="w-10 h-10 rounded-xl bg-neutral-100 text-neutral-600 hover:bg-neutral-900 hover:text-white flex items-center justify-center transition-all duration-200">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" aria-label="Twitter"
+               class="w-10 h-10 rounded-xl bg-neutral-100 text-neutral-600 hover:bg-neutral-900 hover:text-white flex items-center justify-center transition-all duration-200">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" aria-label="Instagram"
+               class="w-10 h-10 rounded-xl bg-neutral-100 text-neutral-600 hover:bg-neutral-900 hover:text-white flex items-center justify-center transition-all duration-200">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" aria-label="Pinterest"
+               class="w-10 h-10 rounded-xl bg-neutral-100 text-neutral-600 hover:bg-neutral-900 hover:text-white flex items-center justify-center transition-all duration-200">
+              <i class="fab fa-pinterest-p"></i>
+            </a>
+            <a href="#" aria-label="YouTube"
+               class="w-10 h-10 rounded-xl bg-neutral-100 text-neutral-600 hover:bg-neutral-900 hover:text-white flex items-center justify-center transition-all duration-200">
+              <i class="fab fa-youtube"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- Google Maps Placeholder                            -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="bg-white py-16">
+  <div class="max-w-7xl mx-auto px-4 lg:px-8">
+    <div class="rounded-2xl overflow-hidden shadow-sm border border-neutral-100 bg-neutral-100 aspect-[21/9] min-h-[300px] flex items-center justify-center">
+      <div class="text-center">
+        <i class="fas fa-map-marked-alt text-5xl text-neutral-300 mb-4"></i>
+        <p class="text-neutral-400 text-sm font-medium">{% trans "Google Maps Integration" %}</p>
+        <p class="text-neutral-300 text-xs mt-1">{% trans "123 Commerce Street, Suite 200, San Francisco, CA" %}</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

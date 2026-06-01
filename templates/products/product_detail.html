@@ -1,0 +1,412 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block title %}{{ product.name }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav class="bg-white/80 backdrop-blur-sm border-b border-gray-100 mb-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <ol class="flex items-center space-x-2 text-sm rtl:space-x-reverse">
+      <li><a href="{% url 'core:home' %}" class="text-gray-500 hover:text-indigo-600 transition-colors">{% trans "Home" %}</a></li>
+      <li class="text-gray-300">/</li>
+      <li><a href="{% url 'products:list' %}?category={{ product.category.slug }}" class="text-gray-500 hover:text-indigo-600 transition-colors">{{ product.category.name }}</a></li>
+      <li class="text-gray-300">/</li>
+      <li class="text-indigo-600 font-medium truncate max-w-[200px]">{{ product.name }}</li>
+    </ol>
+  </div>
+</nav>
+
+<!-- Product Section -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16" x-data="productDetail()">
+  <div class="lg:flex lg:gap-10">
+
+    <!-- Left: Images -->
+    <div class="lg:w-1/2 mb-8 lg:mb-0">
+      <!-- Main Image -->
+      <div class="relative overflow-hidden rounded-2xl bg-gray-50 border border-gray-100 mb-4 group"
+           x-on:mousemove="zoom($event)"
+           x-on:mouseleave="zoomStyle = ''"
+           style="cursor:crosshair; aspect-ratio:1/1;">
+        <img :src="activeImage"
+             alt="{{ product.name }}"
+             class="w-full h-full object-cover transition-transform duration-300"
+             :style="zoomStyle">
+      </div>
+
+      <!-- Thumbnails -->
+      <div class="flex gap-3 flex-wrap">
+        <template x-for="(img, index) in images" :key="index">
+          <button type="button"
+                  class="w-20 h-20 rounded-xl border-2 overflow-hidden transition-all duration-200 hover:shadow-md"
+                  :class="activeImage === img ? 'border-indigo-500 ring-2 ring-indigo-200' : 'border-gray-200'"
+                  x-on:click="activeImage = img">
+            <img :src="img" alt="" class="w-full h-full object-cover">
+          </button>
+        </template>
+      </div>
+    </div>
+
+    <!-- Right: Details -->
+    <div class="lg:w-1/2">
+      <!-- Category Tag -->
+      <span class="inline-block px-3 py-1 text-xs font-semibold text-indigo-600 bg-indigo-50 rounded-full mb-3">
+        {{ product.category.name }}
+      </span>
+
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">{{ product.name }}</h1>
+
+      <!-- Rating -->
+      <div class="flex items-center gap-3 mb-4">
+        <div class="flex items-center text-amber-400">
+          {% with avg=product.average_rating|default:0 %}
+          {% for i in "12345" %}
+          {% if forloop.counter <= avg|add:0 %}
+          <i class="fas fa-star text-sm"></i>
+          {% else %}
+          <i class="far fa-star text-sm"></i>
+          {% endif %}
+          {% endfor %}
+          {% endwith %}
+        </div>
+        <span class="text-sm text-gray-500">
+          {% blocktrans count counter=review_count trimmed %}
+            ({{ counter }} review)
+          {% plural %}
+            ({{ counter }} reviews)
+          {% endblocktrans %}
+        </span>
+      </div>
+
+      <!-- Price -->
+      <div class="mb-6">
+        {% if product.discount_price %}
+        <span class="text-3xl font-bold text-red-500">${{ product.discount_price }}</span>
+        <span class="text-xl text-gray-400 line-through ml-2">${{ product.price }}</span>
+        <span class="ml-3 inline-block px-2 py-0.5 text-xs font-bold text-white bg-red-500 rounded-full">
+          -{% widthratio product.discount_price|floatformat:0 product.price|floatformat:0 100 %}%
+        </span>
+        {% else %}
+        <span class="text-3xl font-bold text-gray-900">${{ product.price }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Short Description -->
+      <p class="text-gray-600 leading-relaxed mb-6">{{ product.short_description|default:product.description|truncatewords:40 }}</p>
+
+      <!-- Stock Status -->
+      <div class="flex items-center gap-2 mb-6">
+        {% if product.stock > 0 %}
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-green-500"></span>
+        <span class="text-sm font-medium text-green-700">{% trans "In Stock" %}</span>
+        {% else %}
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500"></span>
+        <span class="text-sm font-medium text-red-700">{% trans "Out of Stock" %}</span>
+        {% endif %}
+      </div>
+
+      <hr class="border-gray-200 mb-6">
+
+      <!-- Color Options -->
+      {% if product.colors.all %}
+      <div class="mb-5">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">{% trans "Color:" %}</label>
+        <div class="flex gap-2 flex-wrap">
+          {% for color in product.colors.all %}
+          <button type="button"
+                  class="px-4 py-2 text-sm rounded-xl border-2 transition-all duration-200 hover:shadow-sm"
+                  :class="selectedColor === {{ color.id }} ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'"
+                  x-on:click="selectedColor = {{ color.id }}">
+            {{ color.name }}
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Size Options -->
+      {% if product.sizes.all %}
+      <div class="mb-5">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">{% trans "Size:" %}</label>
+        <div class="flex gap-2 flex-wrap">
+          {% for size in product.sizes.all %}
+          <button type="button"
+                  class="px-4 py-2 text-sm rounded-xl border-2 transition-all duration-200 hover:shadow-sm"
+                  :class="selectedSize === {{ size.id }} ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'"
+                  x-on:click="selectedSize = {{ size.id }}">
+            {{ size.name }}
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Actions -->
+      <div class="flex items-center gap-3 mb-6">
+        <!-- Quantity -->
+        <div class="flex items-center border border-gray-200 rounded-xl overflow-hidden">
+          <button type="button"
+                  class="px-3 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors"
+                  x-on:click="qty = Math.max(1, qty - 1)">
+            <i class="fas fa-minus text-xs"></i>
+          </button>
+          <input type="number" x-model="qty" min="1" value="1"
+                 class="w-12 text-center border-x border-gray-200 py-2 text-sm font-medium text-gray-700 bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+          <button type="button"
+                  class="px-3 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors"
+                  x-on:click="qty = qty + 1">
+            <i class="fas fa-plus text-xs"></i>
+          </button>
+        </div>
+
+        <!-- Add to Cart -->
+        <form method="post" action="{% url 'cart:add' product.id %}" class="add-to-cart-form flex-1">
+          {% csrf_token %}
+          <input type="hidden" name="quantity" x-bind:value="qty">
+          <button type="submit"
+                  class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                  {% if product.stock == 0 %}disabled{% endif %}>
+            <i class="fas fa-shopping-bag"></i>
+            {% trans "Add to Cart" %}
+          </button>
+        </form>
+
+        <!-- Wishlist -->
+        <a href="{% url 'wishlist:add' product.id %}"
+           class="flex items-center justify-center w-12 h-12 border-2 border-gray-200 hover:border-red-300 text-gray-400 hover:text-red-500 rounded-xl transition-all duration-200 hover:shadow-sm"
+           title="{% trans 'Add to Wishlist' %}">
+          <i class="far fa-heart text-lg"></i>
+        </a>
+      </div>
+
+      <!-- Secure badge -->
+      <div class="flex items-center gap-2 text-sm text-gray-500 mt-4">
+        <i class="fas fa-shield-alt text-green-500"></i>
+        <span>{% trans "Secure checkout with Stripe & PayPal" %}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Section -->
+  <div class="mt-16" x-data="{ tab: 'description' }">
+    <!-- Tab Buttons -->
+    <div class="flex border-b border-gray-200">
+      <button type="button"
+              class="px-6 py-3 text-sm font-medium transition-all duration-200 border-b-2 -mb-px"
+              :class="tab === 'description' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+              x-on:click="tab = 'description'">
+        {% trans "Description" %}
+      </button>
+      <button type="button"
+              class="px-6 py-3 text-sm font-medium transition-all duration-200 border-b-2 -mb-px"
+              :class="tab === 'specifications' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+              x-on:click="tab = 'specifications'">
+        {% trans "Specifications" %}
+      </button>
+      <button type="button"
+              class="px-6 py-3 text-sm font-medium transition-all duration-200 border-b-2 -mb-px"
+              :class="tab === 'reviews' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+              x-on:click="tab = 'reviews'">
+        {% trans "Reviews" %}
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="bg-white rounded-b-2xl border border-t-0 border-gray-200 p-6 sm:p-8">
+      <!-- Description -->
+      <div x-show="tab === 'description'" x-cloak>
+        <div class="prose max-w-none text-gray-600 leading-relaxed">
+          {{ product.description|safe }}
+        </div>
+      </div>
+
+      <!-- Specifications -->
+      <div x-show="tab === 'specifications'" x-cloak>
+        {% if product.specifications.all %}
+        <div class="overflow-hidden rounded-xl border border-gray-200">
+          <table class="w-full text-sm">
+            <tbody>
+              {% for spec in product.specifications.all %}
+              <tr class="{% cycle 'bg-gray-50' 'bg-white' %}">
+                <th class="px-5 py-3 text-left text-gray-700 font-semibold w-1/3">{{ spec.name }}</th>
+                <td class="px-5 py-3 text-gray-600">{{ spec.value }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+          <i class="fas fa-clipboard-list text-4xl text-gray-300 mb-3"></i>
+          <p class="text-gray-500">{% trans "No specifications available." %}</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Reviews -->
+      <div x-show="tab === 'reviews'" x-cloak>
+        <!-- Summary -->
+        <div class="flex items-center gap-6 mb-8 p-6 bg-gray-50 rounded-2xl">
+          <div class="text-center">
+            <span class="text-4xl font-bold text-gray-900">{{ product.average_rating|default:"0.0" }}</span>
+            <span class="block text-sm text-gray-500">{% trans "out of 5" %}</span>
+          </div>
+          <div>
+            <div class="flex items-center text-amber-400 mb-1">
+              {% with avg=product.average_rating|default:0 %}
+              {% for i in "12345" %}
+              {% if forloop.counter <= avg|add:0 %}
+              <i class="fas fa-star"></i>
+              {% else %}
+              <i class="far fa-star"></i>
+              {% endif %}
+              {% endfor %}
+              {% endwith %}
+            </div>
+            <span class="text-sm text-gray-500">
+              {% blocktrans count counter=review_count trimmed %}
+                {{ counter }} review
+              {% plural %}
+                {{ counter }} reviews
+              {% endblocktrans %}
+            </span>
+          </div>
+        </div>
+
+        <!-- Review List -->
+        {% if reviews %}
+        <div class="space-y-6 mb-8">
+          {% for review in reviews %}
+          <div class="border-b border-gray-100 pb-6">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold text-sm">
+                  {{ review.user.username|first|upper }}
+                </div>
+                <div>
+                  <strong class="text-sm text-gray-900">{{ review.user.get_full_name|default:review.user.username }}</strong>
+                  <div class="flex items-center text-amber-400 text-xs mt-0.5">
+                    {% for i in "12345" %}
+                    {% if forloop.counter <= review.rating %}
+                    <i class="fas fa-star"></i>
+                    {% else %}
+                    <i class="far fa-star"></i>
+                    {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+              <span class="text-xs text-gray-400">{{ review.created_at|date:"M d, Y" }}</span>
+            </div>
+            <p class="text-sm text-gray-600 leading-relaxed">{{ review.comment }}</p>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+          <i class="far fa-comment-dots text-4xl text-gray-300 mb-3"></i>
+          <p class="text-gray-500 mb-4">{% trans "No reviews yet. Be the first to review!" %}</p>
+        </div>
+        {% endif %}
+
+        <!-- Review Form -->
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'reviews:add' product.id %}" class="bg-gray-50 rounded-2xl p-6">
+          {% csrf_token %}
+          <h5 class="text-lg font-semibold text-gray-900 mb-4">{% trans "Write a Review" %}</h5>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">{% trans "Rating" %}</label>
+            <select name="rating" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+              <option value="">{% trans "Select..." %}</option>
+              <option value="5">{% trans "5 - Excellent" %}</option>
+              <option value="4">{% trans "4 - Good" %}</option>
+              <option value="3">{% trans "3 - Average" %}</option>
+              <option value="2">{% trans "2 - Poor" %}</option>
+              <option value="1">{% trans "1 - Terrible" %}</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="reviewComment" class="block text-sm font-medium text-gray-700 mb-2">{% trans "Comment" %}</label>
+            <textarea name="comment" id="reviewComment" rows="4"
+                      class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      required></textarea>
+          </div>
+          <button type="submit"
+                  class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md">
+            <i class="fas fa-paper-plane mr-2"></i>
+            {% trans "Submit Review" %}
+          </button>
+        </form>
+        {% else %}
+        <div class="text-center py-8 bg-gray-50 rounded-2xl">
+          <p class="text-gray-500">
+            <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="text-indigo-600 hover:text-indigo-700 font-medium">{% trans "Log in" %}</a>
+            {% trans "to leave a review." %}
+          </p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  {% if related_products %}
+  <section class="mt-16">
+    <div class="flex items-center justify-between mb-6">
+      <h4 class="text-xl font-bold text-gray-900">{% trans "Related Products" %}</h4>
+      <a href="{% url 'products:list' %}?category={{ product.category.slug }}" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium transition-colors">
+        {% trans "View All" %} <i class="fas fa-arrow-right ml-1 rtl:rotate-180"></i>
+      </a>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+      {% for related in related_products %}
+      <a href="{% url 'products:detail' related.slug %}" class="group">
+        <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-gray-200">
+          <div class="aspect-square overflow-hidden bg-gray-50">
+            <img src="{{ related.thumbnail_url }}" alt="{{ related.name }}" loading="lazy"
+                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+          </div>
+          <div class="p-3 sm:p-4">
+            <h6 class="text-sm font-medium text-gray-900 truncate group-hover:text-indigo-600 transition-colors">{{ related.name }}</h6>
+            <div class="mt-1">
+              {% if related.discount_price %}
+              <span class="font-bold text-red-500 text-sm">${{ related.discount_price }}</span>
+              <span class="text-xs text-gray-400 line-through ml-1">${{ related.price }}</span>
+              {% else %}
+              <span class="font-bold text-gray-900 text-sm">${{ related.price }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function productDetail() {
+  return {
+    activeImage: '{{ product.image_url }}',
+    images: [
+      {% for img in product.images.all %}
+      '{{ img.image_url }}'{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ],
+    selectedColor: null,
+    selectedSize: null,
+    qty: 1,
+    zoomStyle: '',
+    zoom(e) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      this.zoomStyle = `transform: scale(2); transform-origin: ${x}% ${y}%`;
+    }
+  }
+}
+</script>
+{% endblock %}

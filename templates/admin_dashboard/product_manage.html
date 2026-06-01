@@ -1,0 +1,414 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - HomeStore Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .sidebar-link { transition: all 0.2s; }
+        .sidebar-link:hover { background: rgba(255,255,255,0.1); }
+        .sidebar-link.active { background: rgba(255,255,255,0.15); border-left: 3px solid #3b82f6; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans antialiased" x-data="{ sidebarOpen: true, editModal: false, editProduct: {} }">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-white flex flex-col transition-all duration-300" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-64'" x-cloak>
+            <div class="flex items-center gap-3 px-6 py-5 border-b border-slate-700">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-lg font-bold">H</div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight">HomeStore</h1>
+                    <p class="text-xs text-slate-400 -mt-0.5">Admin Panel</p>
+                </div>
+            </div>
+            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-th-large w-5 text-center"></i> Dashboard
+                </a>
+                <a href="#" class="sidebar-link active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white bg-slate-800/50">
+                    <i class="fas fa-box w-5 text-center text-blue-400"></i> Products
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 ml-7 text-xs">
+                    <i class="fas fa-list w-4 text-center"></i> List
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 ml-7 text-xs">
+                    <i class="fas fa-plus w-4 text-center"></i> Add New
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-shopping-cart w-5 text-center"></i> Orders
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-users w-5 text-center"></i> Customers
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-tags w-5 text-center"></i> Categories
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-percent w-5 text-center"></i> Coupons
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-chart-bar w-5 text-center"></i> Reports
+                </a>
+                <hr class="border-slate-700 my-3">
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+                    <i class="fas fa-cog w-5 text-center"></i> Settings
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-red-400">
+                    <i class="fas fa-sign-out-alt w-5 text-center"></i> Logout
+                </a>
+            </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col lg:ml-64">
+            <!-- Top Header -->
+            <header class="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
+                <div class="flex items-center justify-between px-6 py-3">
+                    <div class="flex items-center gap-4">
+                        <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 hover:text-gray-700 lg:hidden">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="text" placeholder="Search products..." class="pl-9 pr-4 py-2 bg-gray-100 border border-transparent focus:border-blue-400 focus:bg-white focus:outline-none rounded-lg text-sm w-64 transition-all">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-5">
+                        <button class="relative text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-bell text-lg"></i>
+                            <span class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-medium">5</span>
+                        </button>
+                        <div class="flex items-center gap-3 border-l pl-5 border-gray-200">
+                            <div class="text-right text-sm hidden sm:block">
+                                <p class="font-medium text-gray-800 leading-tight">Super Admin</p>
+                                <p class="text-xs text-gray-500">Administrator</p>
+                            </div>
+                            <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-sm">SA</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <!-- Title + Add Button -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Products</h2>
+                        <p class="text-sm text-gray-500 mt-0.5">Manage your product catalog</p>
+                    </div>
+                    <button class="mt-3 sm:mt-0 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition flex items-center gap-2 shadow-sm">
+                        <i class="fas fa-plus"></i> Add New Product
+                    </button>
+                </div>
+
+                <!-- Search & Filter Bar -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6">
+                    <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                        <div class="relative flex-1">
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" placeholder="Search by name, SKU, or category..." class="w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                        </div>
+                        <select class="text-sm border border-gray-300 rounded-lg px-3 py-2.5 bg-white text-gray-600 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            <option>All Categories</option>
+                            <option>Electronics</option>
+                            <option>Clothing</option>
+                            <option>Home & Garden</option>
+                            <option>Sports</option>
+                        </select>
+                        <select class="text-sm border border-gray-300 rounded-lg px-3 py-2.5 bg-white text-gray-600 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            <option>All Status</option>
+                            <option>Active</option>
+                            <option>Draft</option>
+                            <option>Archived</option>
+                        </select>
+                        <button class="text-sm text-gray-500 hover:text-gray-700 px-3 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            <i class="fas fa-sync-alt mr-1"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Products Table -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="bg-gray-50 text-left text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                                    <th class="px-5 py-3.5 font-medium"><input type="checkbox" class="rounded border-gray-300"></th>
+                                    <th class="px-5 py-3.5 font-medium">Image</th>
+                                    <th class="px-5 py-3.5 font-medium">Name</th>
+                                    <th class="px-5 py-3.5 font-medium">SKU</th>
+                                    <th class="px-5 py-3.5 font-medium">Category</th>
+                                    <th class="px-5 py-3.5 font-medium">Price</th>
+                                    <th class="px-5 py-3.5 font-medium">Stock</th>
+                                    <th class="px-5 py-3.5 font-medium">Status</th>
+                                    <th class="px-5 py-3.5 font-medium text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                {% for product in products|default:products %}
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-5 py-4"><input type="checkbox" class="rounded border-gray-300"></td>
+                                    <td class="px-5 py-4">
+                                        <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                                            <i class="fas fa-image text-sm"></i>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <p class="font-medium text-gray-800">iPhone 15 Pro Max</p>
+                                        <p class="text-xs text-gray-400">256GB, Natural Titanium</p>
+                                    </td>
+                                    <td class="px-5 py-4 text-gray-600 font-mono text-xs">APP-IP15P-256</td>
+                                    <td class="px-5 py-4"><span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded-full">Electronics</span></td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">$1,199</td>
+                                    <td class="px-5 py-4">
+                                        <span class="text-red-600 font-medium">3</span>
+                                        <span class="text-xs text-gray-400 ml-1">/ low</span>
+                                    </td>
+                                    <td class="px-5 py-4"><span class="bg-emerald-100 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">Active</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button @click="editProduct = { name: 'iPhone 15 Pro Max', sku: 'APP-IP15P-256', price: 1199, stock: 3 }; editModal = true" class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="Edit">
+                                                <i class="fas fa-edit text-xs"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Delete">
+                                                <i class="fas fa-trash text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endwith %}
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-5 py-4"><input type="checkbox" class="rounded border-gray-300"></td>
+                                    <td class="px-5 py-4">
+                                        <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                                            <i class="fas fa-image text-sm"></i>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <p class="font-medium text-gray-800">MacBook Air M3</p>
+                                        <p class="text-xs text-gray-400">13.6", 8GB RAM, 256GB SSD</p>
+                                    </td>
+                                    <td class="px-5 py-4 text-gray-600 font-mono text-xs">APP-MBA-M3-13</td>
+                                    <td class="px-5 py-4"><span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded-full">Electronics</span></td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">$1,099</td>
+                                    <td class="px-5 py-4">
+                                        <span class="text-gray-800 font-medium">15</span>
+                                    </td>
+                                    <td class="px-5 py-4"><span class="bg-emerald-100 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">Active</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button @click="editProduct = { name: 'MacBook Air M3', sku: 'APP-MBA-M3-13', price: 1099, stock: 15 }; editModal = true" class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="Edit">
+                                                <i class="fas fa-edit text-xs"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Delete">
+                                                <i class="fas fa-trash text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-5 py-4"><input type="checkbox" class="rounded border-gray-300"></td>
+                                    <td class="px-5 py-4">
+                                        <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                                            <i class="fas fa-image text-sm"></i>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <p class="font-medium text-gray-800">Sony WH-1000XM5</p>
+                                        <p class="text-xs text-gray-400">Wireless Noise Cancelling</p>
+                                    </td>
+                                    <td class="px-5 py-4 text-gray-600 font-mono text-xs">SNY-WH1000-BLK</td>
+                                    <td class="px-5 py-4"><span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded-full">Electronics</span></td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">$349</td>
+                                    <td class="px-5 py-4">
+                                        <span class="text-gray-800 font-medium">42</span>
+                                    </td>
+                                    <td class="px-5 py-4"><span class="bg-emerald-100 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">Active</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button @click="editProduct = { name: 'Sony WH-1000XM5', sku: 'SNY-WH1000-BLK', price: 349, stock: 42 }; editModal = true" class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="Edit">
+                                                <i class="fas fa-edit text-xs"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Delete">
+                                                <i class="fas fa-trash text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-5 py-4"><input type="checkbox" class="rounded border-gray-300"></td>
+                                    <td class="px-5 py-4">
+                                        <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                                            <i class="fas fa-image text-sm"></i>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <p class="font-medium text-gray-800">Nike Air Max 90</p>
+                                        <p class="text-xs text-gray-400">Men's Shoes, White/Black</p>
+                                    </td>
+                                    <td class="px-5 py-4 text-gray-600 font-mono text-xs">NIK-AM90-WHT</td>
+                                    <td class="px-5 py-4"><span class="bg-emerald-50 text-emerald-700 text-xs px-2.5 py-1 rounded-full">Clothing</span></td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">$129</td>
+                                    <td class="px-5 py-4">
+                                        <span class="text-amber-600 font-medium">8</span>
+                                        <span class="text-xs text-gray-400 ml-1">/ low</span>
+                                    </td>
+                                    <td class="px-5 py-4"><span class="bg-emerald-100 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">Active</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button @click="editProduct = { name: 'Nike Air Max 90', sku: 'NIK-AM90-WHT', price: 129, stock: 8 }; editModal = true" class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="Edit">
+                                                <i class="fas fa-edit text-xs"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Delete">
+                                                <i class="fas fa-trash text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-5 py-4"><input type="checkbox" class="rounded border-gray-300"></td>
+                                    <td class="px-5 py-4">
+                                        <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                                            <i class="fas fa-image text-sm"></i>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <p class="font-medium text-gray-800">Samsung Galaxy S25</p>
+                                        <p class="text-xs text-gray-400">128GB, Phantom Black</p>
+                                    </td>
+                                    <td class="px-5 py-4 text-gray-600 font-mono text-xs">SAM-GS25-128</td>
+                                    <td class="px-5 py-4"><span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded-full">Electronics</span></td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">$799</td>
+                                    <td class="px-5 py-4">
+                                        <span class="text-red-600 font-medium">0</span>
+                                        <span class="text-xs text-gray-400 ml-1">/ out</span>
+                                    </td>
+                                    <td class="px-5 py-4"><span class="bg-gray-100 text-gray-600 text-xs font-medium px-2.5 py-1 rounded-full">Draft</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button @click="editProduct = { name: 'Samsung Galaxy S25', sku: 'SAM-GS25-128', price: 799, stock: 0 }; editModal = true" class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="Edit">
+                                                <i class="fas fa-edit text-xs"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Delete">
+                                                <i class="fas fa-trash text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-5 py-4"><input type="checkbox" class="rounded border-gray-300"></td>
+                                    <td class="px-5 py-4">
+                                        <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                                            <i class="fas fa-image text-sm"></i>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <p class="font-medium text-gray-800">Levi's 501 Original</p>
+                                        <p class="text-xs text-gray-400">Men's Jeans, Dark Wash</p>
+                                    </td>
+                                    <td class="px-5 py-4 text-gray-600 font-mono text-xs">LEV-501-DRK</td>
+                                    <td class="px-5 py-4"><span class="bg-emerald-50 text-emerald-700 text-xs px-2.5 py-1 rounded-full">Clothing</span></td>
+                                    <td class="px-5 py-4 font-medium text-gray-800">$79</td>
+                                    <td class="px-5 py-4">
+                                        <span class="text-gray-800 font-medium">128</span>
+                                    </td>
+                                    <td class="px-5 py-4"><span class="bg-emerald-100 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">Active</span></td>
+                                    <td class="px-5 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button @click="editProduct = { name: 'Levi\'s 501 Original', sku: 'LEV-501-DRK', price: 79, stock: 128 }; editModal = true" class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="Edit">
+                                                <i class="fas fa-edit text-xs"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Delete">
+                                                <i class="fas fa-trash text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="flex items-center justify-between px-5 py-4 border-t border-gray-100 bg-gray-50">
+                        <p class="text-sm text-gray-500">Showing <span class="font-medium">1</span> to <span class="font-medium">6</span> of <span class="font-medium">1,247</span> products</p>
+                        <div class="flex gap-1">
+                            <button class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white text-gray-500 hover:bg-gray-50 transition" disabled><i class="fas fa-chevron-left"></i></button>
+                            <button class="px-3 py-1.5 text-sm border border-blue-600 rounded-lg bg-blue-600 text-white font-medium">1</button>
+                            <button class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white text-gray-600 hover:bg-gray-50 transition">2</button>
+                            <button class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white text-gray-600 hover:bg-gray-50 transition">3</button>
+                            <span class="px-2 py-1.5 text-sm text-gray-400">...</span>
+                            <button class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white text-gray-600 hover:bg-gray-50 transition">208</button>
+                            <button class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white text-gray-500 hover:bg-gray-50 transition"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Quick Edit Modal -->
+        <div x-show="editModal" class="fixed inset-0 z-50 flex items-center justify-center" x-cloak>
+            <div class="absolute inset-0 bg-black/50" @click="editModal = false"></div>
+            <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6" @click.outside="editModal = false">
+                <div class="flex items-center justify-between mb-5">
+                    <h3 class="text-lg font-bold text-gray-800">Quick Edit Product</h3>
+                    <button @click="editModal = false" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+                </div>
+                <form>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                            <input type="text" x-model="editProduct.name" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">SKU</label>
+                                <input type="text" x-model="editProduct.sku" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                <select class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                    <option>Electronics</option>
+                                    <option>Clothing</option>
+                                    <option>Home & Garden</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
+                                <input type="number" x-model="editProduct.price" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+                                <input type="number" x-model="editProduct.stock" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                            <select class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                <option>Active</option>
+                                <option>Draft</option>
+                                <option>Archived</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Product description..."></textarea>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
+                        <button type="button" @click="editModal = false" class="px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">Cancel</button>
+                        <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition shadow-sm">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

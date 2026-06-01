@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block meta_description %}{% trans "Add a new shipping address to your HomeStore account." %}{% endblock %}
+{% block meta_keywords %}{% trans "add address, shipping address, delivery address" %}{% endblock %}
+
+{% block title %}{% trans "Add Address" %} - HomeStore{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] py-16 md:py-24 bg-neutral-50">
+  <div class="max-w-2xl mx-auto px-4">
+    <div class="mb-8">
+      <a href="{% url 'accounts:profile' %}" class="inline-flex items-center text-sm text-neutral-500 hover:text-neutral-900 transition-colors mb-4">
+        <i class="fas fa-arrow-left mr-2"></i> {% trans "Back to Profile" %}
+      </a>
+      <h1 class="text-3xl font-bold text-neutral-900">{% trans "Add Address" %}</h1>
+      <p class="text-neutral-500 mt-1">{% trans "Enter your shipping address details below." %}</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 p-8 md:p-10">
+      {% if form.non_field_errors %}
+        <div class="mb-6 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+          {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post" class="space-y-5">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label for="id_first_name" class="block text-sm font-medium text-neutral-700 mb-1.5">{% trans "First Name" %} <span class="text-red-400">*</span></label>
+            <input type="text" id="id_first_name" name="first_name" required
+                   class="w-full px-4 py-2.5 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200"
+                   placeholder="John">
+            {% if form.first_name.errors %}<p class="mt-1 text-xs text-red-600">{{ form.first_name.errors.0 }}</p>{% endif %}
+          </div>
+          <div>
+            <label for="id_last_name" class="block text-sm font-medium text-neutral-700 mb-1.5">{% trans "Last Name" %} <span class="text-red-400">*</span></label>
+            <input type="text" id="id_last_name" name="last_name" required
+                   class="w-full px-4 py-2.5 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200"
+                   placeholder="Doe">
+            {% if form.last_name.errors %}<p class="mt-1 text-xs text-red-600">{{ form.last_name.errors.0 }}</p>{% endif %}
+          </div>
+        </div>
+
+        <div>
+          <label for="id_phone" class="block text-sm font-medium text-neutral-700 mb-1.5">{% trans "Phone Number" %} <span class="text-red-400">*</span></label>
+          <input type="tel" id="id_phone" name="phone" required
+                 class="w-full px-4 py-2.5 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200"
+                 placeholder="+1 (555) 000-0000">
+          {% if form.phone.errors %}<p class="mt-1 text-xs text-red-600">{{ form.phone.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div>
+          <label for="id_address_line1" class="block text-sm font-medium text-neutral-700 mb-1.5">{% trans "Address Line 1" %} <span class="text-red-400">*</span></label>
+          <input type="text" id="id_address_line1" name="address_line1" required
+                 class="w-full px-4 py-2.5 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200"
+                 placeholder="123 Main Street">
+          {% if form.address_line1.errors %}<p class="mt-1 text-xs text-red-600">{{ form.address_line1.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div>
+          <label for="id_address_line2" class="block text-sm font-medium text-neutral-700 mb-1.5">{% trans "Address Line 2" %} <span class="text-neutral-300 font-normal">({% trans "optional" %})</span></label>
+          <input type="text" id="id_address_line2" name="address_line2"
+                 class="w-full px-4 py-2.5 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200"
+                  placeholder="{% trans "Apt, Suite, Unit, etc." %}">
+          {% if form.address_line2.errors %}<p class="mt-1 text-xs text-red-600">{{ form.address_line2.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div>
+            <label for="id_city" class="block text-sm font-medium text-neutral-700 mb-1.5">{% trans "City" %} <span class="text-red-400">*</span></label>
+            <input type="text" id="id_city" name="city" required
+                   class="w-full px-4 py-2.5 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200"
+                   placeholder="San Francisco">
+            {% if form.city.errors %}<p class="mt-1 text-xs text-red-600">{{ form.city.errors.0 }}</p>{% endif %}
+          </div>
+          <div>
+            <label for="id_state" class="block text-sm font-medium text-neutral-700 mb-1.5">{% trans "State" %} <span class="text-red-400">*</span></label>
+            <input type="text" id="id_state" name="state" required
+                   class="w-full px-4 py-2.5 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200"
+                   placeholder="California">
+            {% if form.state.errors %}<p class="mt-1 text-xs text-red-600">{{ form.state.errors.0 }}</p>{% endif %}
+          </div>
+          <div>
+            <label for="id_zip_code" class="block text-sm font-medium text-neutral-700 mb-1.5">{% trans "ZIP Code" %} <span class="text-red-400">*</span></label>
+            <input type="text" id="id_zip_code" name="zip_code" required
+                   class="w-full px-4 py-2.5 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200"
+                   placeholder="94102">
+            {% if form.zip_code.errors %}<p class="mt-1 text-xs text-red-600">{{ form.zip_code.errors.0 }}</p>{% endif %}
+          </div>
+        </div>
+
+        <div>
+          <label for="id_country" class="block text-sm font-medium text-neutral-700 mb-1.5">{% trans "Country" %} <span class="text-red-400">*</span></label>
+          <select id="id_country" name="country" required
+                  class="w-full px-4 py-2.5 border border-neutral-300 rounded-xl text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200 bg-white">
+            <option value="">{% trans "Select a country" %}</option>
+            <option value="US">United States</option>
+            <option value="CA">Canada</option>
+            <option value="GB">United Kingdom</option>
+            <option value="AU">Australia</option>
+            <option value="DE">Germany</option>
+            <option value="FR">France</option>
+          </select>
+          {% if form.country.errors %}<p class="mt-1 text-xs text-red-600">{{ form.country.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div class="flex items-center gap-3 pt-2">
+          <input type="checkbox" id="id_is_default" name="is_default"
+                 class="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900 focus:ring-2">
+          <label for="id_is_default" class="text-sm text-neutral-700">{% trans "Set as default shipping address" %}</label>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center gap-4 pt-4">
+          <button type="submit"
+                  class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 bg-neutral-900 text-white text-sm font-semibold rounded-xl hover:bg-neutral-800 transition-all duration-200 shadow-sm hover:shadow-md">
+            <i class="fas fa-plus mr-2"></i> {% trans "Add Address" %}
+          </button>
+          <a href="{% url 'accounts:profile' %}"
+             class="inline-flex items-center justify-center px-6 py-3 text-sm text-neutral-600 hover:text-neutral-900 transition-colors">
+            {% trans "Cancel" %}
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
