@@ -572,3 +572,135 @@ msgstr "إزالة العنصر"
 
 msgid "Log in"
 msgstr "تسجيل الدخول"
+
+# Password Reset
+msgid "Password reset email sent. Check your inbox for further instructions."
+msgstr "تم إرسال بريد إعادة تعيين كلمة المرور. تحقق من صندوق الوارد."
+
+msgid "Reset Link Sent"
+msgstr "تم إرسال رابط إعادة التعيين"
+
+msgid "Check Your Inbox"
+msgstr "تحقق من صندوق الوارد"
+
+msgid "We've sent a password reset link to your email address."
+msgstr "لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني."
+
+msgid "If you don't see it within a few minutes, check your spam folder."
+msgstr "إذا لم تره خلال دقائق، تحقق من مجلد البريد المزعج."
+
+msgid "Back to Login"
+msgstr "العودة إلى تسجيل الدخول"
+
+msgid "Set a new password for your HomeStore account."
+msgstr "تعيين كلمة مرور جديدة لحسابك في HomeStore."
+
+msgid "Set New Password"
+msgstr "تعيين كلمة مرور جديدة"
+
+msgid "Enter your new password below."
+msgstr "أدخل كلمة المرور الجديدة أدناه."
+
+msgid "New Password"
+msgstr "كلمة المرور الجديدة"
+
+msgid "Confirm New Password"
+msgstr "تأكيد كلمة المرور الجديدة"
+
+msgid "Reset Password"
+msgstr "إعادة تعيين كلمة المرور"
+
+msgid "Invalid Reset Link"
+msgstr "رابط إعادة تعيين غير صالح"
+
+msgid "This password reset link is invalid or has expired."
+msgstr "رابط إعادة تعيين كلمة المرور هذا غير صالح أو منتهي الصلاحية."
+
+msgid "Request New Link"
+msgstr "طلب رابط جديد"
+
+msgid "Your password has been reset successfully. Log in to your HomeStore account."
+msgstr "تم إعادة تعيين كلمة المرور بنجاح. سجل الدخول إلى حسابك في HomeStore."
+
+msgid "Password Reset Complete"
+msgstr "تم إعادة تعيين كلمة المرور"
+
+msgid "Your password has been set successfully. You can now log in with your new password."
+msgstr "تم تعيين كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة."
+
+msgid "Log In"
+msgstr "تسجيل الدخول"
+
+# Contact page additions
+msgid "Riyadh, Saudi Arabia"
+msgstr "الرياض، المملكة العربية السعودية"
+
+msgid "Available 24/7 on WhatsApp"
+msgstr "متاح 24/7 على واتساب"
+
+msgid "Sending"
+msgstr "جاري الإرسال"
+
+# Meta descriptions
+msgid "Get in touch with HomeStore. Contact us for inquiries, support, or feedback. We're here to help with all your home appliance needs."
+msgstr "تواصل مع HomeStore. اتصل بنا للاستفسارات أو الدعم أو الملاحظات. نحن هنا لمساعدتك في جميع احتياجات الأجهزة المنزلية."
+
+msgid "contact HomeStore, customer support, appliance inquiries, store locations"
+msgstr "اتصل HomeStore، دعم العملاء، استفسارات الأجهزة، مواقع المتاجر"
+
+msgid "Contact HomeStore - We're Here to Help"
+msgstr "اتصل HomeStore - نحن هنا للمساعدة"
+
+msgid "Reach out to HomeStore — call, email, or visit us. Our team is ready to assist you."
+msgstr "تواصل مع HomeStore — اتصل أو راسلنا أو زرنا. فريقنا مستعد لمساعدتك."
+
+msgid "Learn about HomeStore – our mission, values, and team. We bring premium home appliances with quality, trust, and innovation."
+msgstr "تعرف على HomeStore – مهمتنا وقيمنا وفريقنا. نقدم أجهزة منزلية عالية الجودة مع الثقة والابتكار."
+
+msgid "about HomeStore, our mission, company values, home appliances team"
+msgstr "حول HomeStore، مهمتنا، قيم الشركة، فريق الأجهزة المنزلية"
+
+msgid "About HomeStore - Premium Home Appliances"
+msgstr "حول HomeStore - الأجهزة المنزلية الفاخرة"
+
+msgid "Discover the HomeStore story, our mission, and what drives us to deliver the best home appliances."
+msgstr "اكتشف قصة HomeStore ومهمتنا وما يدفعنا لتقديم أفضل الأجهزة المنزلية."
+
+msgid "Search appliances..."
+msgstr "ابحث عن أجهزة..."
+
+msgid "John Doe"
+msgstr "محمد أحمد"
+
+msgid "john@example.com"
+msgstr "mohamed@example.com"
+
+msgid "How can we help you?"
+msgstr "كيف يمكننا مساعدتك؟"
+
+msgid "Tell us more about your inquiry..."
+msgstr "أخبرنا المزيد عن استفسارك..."
+
+msgid "Close announcement"
+msgstr "إغلاق الإعلان"
+
+msgid "Open menu"
+msgstr "فتح القائمة"
+
+msgid "Enter your email address"
+msgstr "أدخل بريدك الإلكتروني"
+
+msgid "Google Maps Integration"
+msgstr "خرائط جوجل"
+
+msgid "Free Shipping on orders over <strong>$200</strong>"
+msgstr "توصيل مجاني للطلبات فوق <strong>$200</strong>"
+
+msgid "Switch to English"
+msgstr "التبديل إلى الإنجليزية"
+
+msgid "Sending..."
+msgstr "جاري الإرسال..."
+
+msgid "We Accept"
+msgstr "نقبل"

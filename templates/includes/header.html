@@ -52,7 +52,7 @@
                    x-model="q"
                    @input.debounce.300ms="fetchSuggestions"
                    @focus="fetchSuggestions"
-                   placeholder="Search appliances..."
+                   placeholder="{% trans 'Search appliances...' %}"
                    class="w-full pl-11 pr-4 py-2.5 bg-neutral-100 border border-neutral-200 rounded-full
                           text-sm text-neutral-800 placeholder-neutral-400
                           focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:border-transparent
@@ -296,7 +296,7 @@
     <!-- Search (Mobile) -->
     <div class="p-4 border-b border-neutral-100">
       <form action="{% url 'products:list' %}" method="GET" class="relative">
-        <input type="text" name="q" placeholder="Search appliances..."
+        <input type="text" name="q" placeholder="{% trans 'Search appliances...' %}"
                class="w-full pl-10 pr-4 py-2.5 bg-neutral-100 border border-neutral-200 rounded-full
                       text-sm text-neutral-800 placeholder-neutral-400
                       focus:outline-none focus:ring-2 focus:ring-neutral-300"/>

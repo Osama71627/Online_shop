@@ -31,13 +31,19 @@ def about(request):
 
 def contact(request):
     if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
         ContactMessage.objects.create(
-            name=request.POST.get('name'),
-            email=request.POST.get('email'),
-            subject=request.POST.get('subject'),
-            message=request.POST.get('message'),
+            name=name,
+            email=email,
+            subject=subject,
+            message=message,
         )
-        return JsonResponse({'status': 'success', 'message': _('Message sent successfully!')})
+        wa_text = f"New message from {name} ({email})%0A%0ASubject: {subject}%0A%0AMessage: {message}"
+        wa_url = f"https://wa.me/966570904651?text={wa_text}"
+        return JsonResponse({'status': 'success', 'message': _('Message sent successfully!'), 'whatsapp_url': wa_url})
     return render(request, 'contact.html')
 
 @require_POST

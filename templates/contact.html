@@ -43,7 +43,7 @@
           <h2 class="text-2xl font-bold text-neutral-900 mb-2">{% trans "Send Us a Message" %}</h2>
           <p class="text-sm text-neutral-500 mb-8">{% blocktrans %}Fill out the form below and we'll get back to you within 24 hours.{% endblocktrans %}</p>
 
-          <form method="post" action="{% url 'core:contact' %}" class="space-y-5">
+          <form method="post" action="{% url 'core:contact' %}" class="space-y-5" id="contactForm">
             {% csrf_token %}
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -55,7 +55,7 @@
                   </div>
                   <input type="text" id="id_name" name="name" required
                          class="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200"
-                         placeholder="John Doe">
+                         placeholder="{% trans 'John Doe' %}">
                 </div>
               </div>
               <div>
@@ -66,7 +66,7 @@
                   </div>
                   <input type="email" id="id_email" name="email" required
                          class="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200"
-                         placeholder="john@example.com">
+                         placeholder="{% trans 'john@example.com' %}">
                 </div>
               </div>
             </div>
@@ -79,7 +79,7 @@
                 </div>
                 <input type="text" id="id_subject" name="subject" required
                        class="w-full pl-10 pr-4 py-2.5 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200"
-                       placeholder="How can we help you?">
+                       placeholder="{% trans 'How can we help you?' %}">
               </div>
             </div>
 
@@ -87,7 +87,7 @@
                 <label for="id_message" class="block text-sm font-medium text-neutral-700 mb-1.5">{% trans "Message" %} <span class="text-red-400">*</span></label>
               <textarea id="id_message" name="message" rows="5" required
                         class="w-full px-4 py-3 border border-neutral-300 rounded-xl text-sm text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200 resize-y"
-                        placeholder="Tell us more about your inquiry..."></textarea>
+                        placeholder="{% trans 'Tell us more about your inquiry...' %}"></textarea>
             </div>
 
             <button type="submit"
@@ -95,6 +95,7 @@
               <i class="fas fa-paper-plane mr-2"></i> {% trans "Send Message" %}
             </button>
           </form>
+          <p id="formFeedback" class="text-sm text-emerald-600 mt-4 hidden"><i class="fas fa-check-circle mr-1"></i> <span></span></p>
         </div>
       </div>
 
@@ -106,7 +107,7 @@
           </div>
           <div>
             <h3 class="text-sm font-semibold text-neutral-900 mb-1">{% trans "Our Address" %}</h3>
-            <p class="text-sm text-neutral-600 leading-relaxed">{% trans "123 Commerce Street, Suite 200" %}<br>{% trans "San Francisco, CA 94102" %}</p>
+            <p class="text-sm text-neutral-600">{% trans "Riyadh, Saudi Arabia" %}</p>
           </div>
         </div>
 
@@ -116,8 +117,8 @@
           </div>
           <div>
             <h3 class="text-sm font-semibold text-neutral-900 mb-1">{% trans "Phone" %}</h3>
-            <p class="text-sm text-neutral-600">+1 (800) 123-4567</p>
-            <p class="text-xs text-neutral-400 mt-0.5">{% trans "Toll-free, Mon–Fri 9am–6pm PST" %}</p>
+            <p class="text-sm text-neutral-600" dir="ltr">+966 57 090 4651</p>
+            <p class="text-xs text-neutral-400 mt-0.5">{% trans "Available 24/7 on WhatsApp" %}</p>
           </div>
         </div>
 
@@ -127,22 +128,8 @@
           </div>
           <div>
             <h3 class="text-sm font-semibold text-neutral-900 mb-1">{% trans "Email" %}</h3>
-            <p class="text-sm text-neutral-600">support@homestore.com</p>
+            <p class="text-sm text-neutral-600">eng.osamahameed1@gmail.com</p>
             <p class="text-xs text-neutral-400 mt-0.5">{% trans "We reply within 24 hours" %}</p>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 flex items-start gap-4">
-          <div class="w-12 h-12 rounded-xl bg-neutral-900 text-white flex items-center justify-center flex-shrink-0">
-            <i class="fas fa-clock"></i>
-          </div>
-          <div>
-            <h3 class="text-sm font-semibold text-neutral-900 mb-1">{% trans "Working Hours" %}</h3>
-            <div class="text-sm text-neutral-600 space-y-0.5">
-              <p>{% trans "Mon – Fri: 9:00 AM – 6:00 PM" %}</p>
-              <p>{% trans "Saturday: 10:00 AM – 4:00 PM" %}</p>
-              <p>{% trans "Sunday: Closed" %}</p>
-            </div>
           </div>
         </div>
 
@@ -186,9 +173,48 @@
       <div class="text-center">
         <i class="fas fa-map-marked-alt text-5xl text-neutral-300 mb-4"></i>
         <p class="text-neutral-400 text-sm font-medium">{% trans "Google Maps Integration" %}</p>
-        <p class="text-neutral-300 text-xs mt-1">{% trans "123 Commerce Street, Suite 200, San Francisco, CA" %}</p>
+        <p class="text-neutral-300 text-xs mt-1">{% trans "Riyadh, Saudi Arabia" %}</p>
       </div>
     </div>
   </div>
 </section>
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var form = document.getElementById('contactForm');
+  var feedback = document.getElementById('formFeedback');
+  if (!form) return;
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var btn = form.querySelector('button[type="submit"]');
+    var originalHtml = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> {% trans "Sending" %}...';
+    btn.disabled = true;
+    var formData = new FormData(form);
+    fetch(form.action, {
+      method: 'POST',
+      body: formData,
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.status === 'success') {
+        feedback.querySelector('span').textContent = data.message;
+        feedback.classList.remove('hidden');
+        form.reset();
+        if (data.whatsapp_url) {
+          window.open(data.whatsapp_url, '_blank');
+        }
+      }
+    })
+    .catch(function() {})
+    .finally(function() {
+      btn.innerHTML = originalHtml;
+      btn.disabled = false;
+    });
+  });
+});
+</script>
+{% endblock %}
 {% endblock %}
